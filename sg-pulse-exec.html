@@ -102,6 +102,7 @@
   .glegend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:11.5px;color:var(--ink);margin-top:9px}
   .glegend span{display:inline-flex;align-items:center}.glegend i{width:9px;height:9px;border-radius:50%;margin-right:5px}
   .glegend .gd{margin-left:auto;color:var(--mut);font-variant-numeric:tabular-nums}
+  .gpane h5 .ghead{margin-left:auto;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
   .sbar{display:flex;height:9px;border-radius:5px;overflow:hidden;margin:6px 0 4px}.sbar i{display:block;height:100%}.sbar .pos{background:var(--green)}.sbar .neu{background:var(--amber)}.sbar .neg{background:var(--red)}
   .sleg{font-size:11.5px;color:var(--mut)}
   .seq{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 16px;font-size:13px}
@@ -228,13 +229,13 @@ function gapPane(label,off,otherSent,otherN,gp){
   const ox=pctX(num(off.sent)), tx=pctX(num(otherSent)); const lo=Math.min(ox,tx), w=Math.max(2,Math.abs(ox-tx));
   const dist=Math.abs(num(off.sent)-num(otherSent));
   const oc=toneCol(num(off.sent)), tc=toneCol(num(otherSent));
-  return `<div class="lane gpane"><h5>${head} <span class="vb ${gp.v}">${gp.verdict}</span></h5>`
+  return `<div class="lane gpane"><h5>${head} <span class="vb ${gp.v}">${gp.verdict}</span><span class="ghead">Gap ${dist.toFixed(2)}</span></h5>`
     +`<div class="gtrack"><div class="gbase"></div><div class="gzero"></div>`
     +`<div class="gspan" style="left:${lo}%;width:${w}%"></div>`
     +`<i class="gdot" style="left:${ox}%;background:${oc}" title="Official ${fmtSent(off.sent)}"></i>`
     +`<i class="gdot" style="left:${tx}%;background:${tc}" title="${label} ${fmtSent(otherSent)}"></i></div>`
     +`<div class="gends"><span>negative</span><span>positive</span></div>`
-    +`<div class="glegend"><span><i style="background:${oc}"></i>Official ${fmtSent(off.sent)}</span><span><i style="background:${tc}"></i>${label} ${fmtSent(otherSent)}</span><span class="gd">gap ${dist.toFixed(2)}</span></div>`
+    +`<div class="glegend"><span><i style="background:${oc}"></i>Official ${fmtSent(off.sent)}</span><span><i style="background:${tc}"></i>${label} ${fmtSent(otherSent)}</span></div>`
     +`<div class="gapsum" style="margin-top:10px">${strip(gp.detail||'')}</div></div>`;
 }
 function issueRow(s){
@@ -357,7 +358,7 @@ async function openDetail(topic,kind){
   const gapPair=(label,n,cs,insight,kwCp)=>{
     if(!off) return {t:`<b>Official ↔ ${label}:</b> no official line — not assessed`,short:`<b>${label}:</b> no official line`,v:'amber',verdict:'no official line',detail:'No official line captured — gap not assessed.'};
     if(!n||cs==null) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber',verdict:'no data',detail:`No ${label.toLowerCase()} captured in this window.`};
-    const dist=Math.abs(num(off.sent)-num(cs)); const verdict=dist>0.3?'divergence':'aligned'; const vv=dist>0.3?'red':'green';
+    const dist=Math.round(Math.abs(num(off.sent)-num(cs))*100)/100; const verdict=dist>0.3?'divergence':'aligned'; const vv=dist>0.3?'red':'green';
     const toneW=x=>x<=-0.15?'negative':x>=0.15?'positive':'neutral';
     const detail=insight?insight:`${label} reaction is ${toneW(num(cs))} (avg ${num(cs).toFixed(2)}) against a ${toneW(num(off.sent))} official line${off.sent!=null?` (${num(off.sent).toFixed(2)})`:''} — from ${n} ${label.toLowerCase()} item${n!==1?'s':''}.`;
     const offK=kwShort(sm.kw_off,3), cpK=kwShort(kwCp,3);
