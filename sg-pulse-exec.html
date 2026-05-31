@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>SG Digital Pulse — Leadership View</title>
+<title>Issue Tracker — Leadership View</title>
 <!-- Google Analytics 4 (fires only over http(s), not file://) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-EM78NPVF6V"></script>
 <script>
@@ -20,13 +20,15 @@
     --ambertx:#f7d774;--greentx:#7ee0ad;--bannerbg1:#3a1115;--bannerbg2:#451519;--bannertx:#ffd7d9;--verdictbg:#2a1115;
   }
   @media (prefers-color-scheme: light){:root{
-    --bg:#f7f8fa;--card:#fff;--line:#e4e7ec;--ink:#1c2230;--mut:#667085;
+    --bg:#f7f8fa;--card:#fff;--line:#e4e7ec;--ink:#1c2230;--mut:#5d6675;
     --red:#d92d20;--amber:#b9770a;--green:#067647;--grey:#98a2b3;--accent:#175cd3;
     --panel:#f1f3f5;--barbg:#e9ebef;--neu:#b6bcc6;--quote:#344054;--ovbg:rgba(20,30,50,.4);
     --redbg:#fdeceb;--redtx:#a3261d;--redbd:#f3c2bf;--acctx:#1456b8;--accbg:#e7effb;--greenbg:#e7f6ee;
     --ambertx:#8a5a06;--greentx:#075c38;--bannerbg1:#fdecec;--bannerbg2:#fbe3e3;--bannertx:#9a1c1c;--verdictbg:#fdeceb;
   }}
   *{box-sizing:border-box}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  [data-topic]:focus-visible,[data-story]:focus-visible,[data-tag]:focus-visible,[data-gapcard]:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
   body{margin:0;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
   .wrap{max-width:820px;margin:0 auto;padding:0 16px 72px}
   .banner{background:repeating-linear-gradient(45deg,var(--bannerbg1),var(--bannerbg1) 12px,var(--bannerbg2) 12px,var(--bannerbg2) 24px);color:var(--bannertx);font-weight:700;letter-spacing:.04em;text-align:center;padding:9px 12px;font-size:12.5px;border-bottom:1px solid var(--redbd);position:sticky;top:0;z-index:9}
@@ -74,6 +76,12 @@
   .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0 14px}.mgrid .m{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;min-height:68px}.mgrid .m .mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.mgrid .m .mic{color:var(--mut);flex:0 0 auto}.mgrid .m .mic svg{width:15px;height:15px}
   .mgrid .m .l{font-size:10px;color:var(--mut);line-height:1.2}.mgrid .m .n{font-size:16px;font-weight:700;margin-top:auto;padding-top:6px}
   .lanes{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 18px}@media(min-width:620px){.lanes{grid-template-columns:repeat(3,1fr)}}
+  .gap2{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 18px}@media(min-width:620px){.gap2{grid-template-columns:1fr 1fr}}.gpane .gapsum{font-size:12.5px;color:var(--ink)}
+  .hdr{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:10px}
+  .tldrbtn{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;background:var(--card);color:var(--mut);white-space:nowrap;flex:none}.tldrbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .gapcard{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:10px 12px;margin:10px 0 14px;background:var(--card);cursor:pointer}.gapcard:hover{border-color:var(--accent)}
+  .ctrls{display:flex;align-items:center;gap:10px;margin:8px 0 4px}
+  .drawer{margin:4px 0 14px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);display:flex;flex-wrap:wrap;gap:10px;align-items:center}.drawer[hidden]{display:none}.drawer .range{margin:0}.drawer .sortbar{margin:0}
   .gapbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--card);margin:8px 0 18px}
   .gapsum{font-size:13px;color:var(--ink);line-height:1.8;margin-top:12px}
   .lane{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card)}.lane h5{margin:0 0 6px;font-size:12px;color:var(--ink);display:flex;align-items:center;gap:6px}.lane p{margin:0;font-size:13px;color:var(--ink)}.lane .stance{font-size:11px;color:var(--mut);margin-top:6px}.lane.empty{border-style:dashed;opacity:.7}
@@ -84,6 +92,16 @@
   .track{position:relative;height:30px}.track .base{position:absolute;top:13px;left:0;right:0;height:4px;background:var(--barbg);border-radius:2px}.track .span{position:absolute;top:13px;height:4px;border-radius:2px}
   .pin{position:absolute;top:5px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}.pin i{width:13px;height:13px;border-radius:50%;border:2px solid var(--bg)}.pin span{font-size:10.5px;margin-top:2px;white-space:nowrap}
   .rends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--mut);margin-top:11px}
+  .gtrack{position:relative;height:30px;margin:4px 0 0}
+  .gtrack .gbase{position:absolute;top:15px;left:0;right:0;height:3px;background:var(--barbg);border-radius:2px}
+  .gtrack .gzero{position:absolute;top:9px;left:50%;width:1px;height:15px;background:var(--line)}
+  .gtrack .gzero::after{content:"0";position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--mut)}
+  .gtrack .gspan{position:absolute;top:14.5px;height:5px;border-radius:3px;background:var(--mut);opacity:.32}
+  .gtrack .gdot{position:absolute;top:10px;width:13px;height:13px;border-radius:50%;transform:translateX(-50%);border:2px solid var(--card);box-shadow:0 0 0 1px var(--line)}
+  .gends{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);margin-top:3px}
+  .glegend{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:11.5px;color:var(--ink);margin-top:9px}
+  .glegend span{display:inline-flex;align-items:center}.glegend i{width:9px;height:9px;border-radius:50%;margin-right:5px}
+  .glegend .gd{margin-left:auto;color:var(--mut);font-variant-numeric:tabular-nums}
   .sbar{display:flex;height:9px;border-radius:5px;overflow:hidden;margin:6px 0 4px}.sbar i{display:block;height:100%}.sbar .pos{background:var(--green)}.sbar .neu{background:var(--amber)}.sbar .neg{background:var(--red)}
   .sleg{font-size:11.5px;color:var(--mut)}
   .seq{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 16px;font-size:13px}
@@ -96,8 +114,19 @@
   .onreq{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:14px;color:var(--mut);font-size:13px;margin-top:12px}
   a.lnk{color:var(--accent)}
   .loading{color:var(--mut);font-size:14px;padding:30px 0;text-align:center}
+  .skel{padding:2px 0}
+  .skrow{display:flex;align-items:center;gap:11px;padding:13px 2px;border-bottom:1px solid var(--line)}
+  .skrow .skb{flex:1}
+  .sk,.skrow .skdot{background:var(--barbg);background-image:linear-gradient(90deg,var(--barbg) 25%,var(--line) 37%,var(--barbg) 63%);background-size:400% 100%;animation:sh 1.4s ease infinite;border-radius:6px}
+  .skrow .skdot{width:10px;height:10px;border-radius:50%;flex:none}
+  @keyframes sh{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  @media (prefers-reduced-motion:reduce){.sk,.skrow .skdot{animation:none}}
+  .estate{text-align:center;color:var(--mut);padding:36px 18px}
+  .estate svg{width:30px;height:30px;margin:0 auto 11px;display:block;opacity:.45;color:var(--mut)}
+  .estate .et{font-size:14px;color:var(--ink);margin-bottom:3px}
+  .estate .es{font-size:12.5px;color:var(--mut);line-height:1.4}
   .range{display:flex;gap:6px;margin:12px 0 4px;flex-wrap:wrap;align-items:center}
-  .range span{font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer}
+  .range span{font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
   .range span.on{color:var(--ink);border-color:var(--accent)}
   .range input,.range button{font:13px/1 inherit;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}
   .info{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border:1px solid var(--line);border-radius:50%;color:var(--mut);font:italic 700 10px/1 Georgia,serif;cursor:help;margin-left:6px;position:relative;vertical-align:middle}
@@ -112,37 +141,39 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>SG Digital Pulse — Leadership View</h1>
-  <p class="sub" id="sub">Loading live data…</p>
-  <div class="meta" id="capstat" style="margin-top:2px"></div>
+  <div class="hdr"><div><h1>Issue Tracker — Leadership View</h1><p class="sub" id="sub">Loading live data…</p></div><button id="tldr" class="tldrbtn" title="Condense everything to verdicts, counts and keywords">TL;DR</button></div>
   <nav class="tabs" id="tabs">
     <button data-v="overview" class="on">Overview</button>
     <button data-v="stories">News</button>
-    <button data-v="issues">Topics</button>
+    <button data-v="incidents">Issues</button>
     <button data-v="sources">Sources</button>
   </nav>
-  <div class="range" id="range"><span data-d="1">24h</span><span data-d="2">2d</span><span data-d="30" class="on">30d</span><span data-d="cal">Calendar</span><span id="tldr" style="margin-left:auto" title="Condense everything to verdicts, counts and keywords">TL;DR</span></div>
-  <div class="range" id="calbar" style="display:none"><span style="border:none;padding:0">From</span><input type="date" id="calFrom"><span style="border:none;padding:0">to</span><input type="date" id="calTo"><button id="calApply">Apply</button></div>
-  <section id="overview" class="on"><div class="kpis" id="kpis"></div><div id="ov-summary"></div>
+  <div class="ctrls"><button id="filtbtn" class="tldrbtn">⚙ Filters</button><span class="meta" id="ctrlsum"></span></div>
+  <div class="drawer" id="controls" hidden>
+    <div class="range" id="range"><span data-d="1">24h</span><span data-d="2">2d</span><span data-d="30" class="on">30d</span><span data-d="cal">Calendar</span></div>
+    <div class="range" id="calbar" style="display:none"><span style="border:none;padding:0">From</span><input type="date" id="calFrom"><span style="border:none;padding:0">to</span><input type="date" id="calTo"><button id="calApply">Apply</button></div>
+    <div class="sortbar"><label for="ffacet">Filter</label><select id="ffacet"><option value="">All</option><option value="domain">Domain</option><option value="theme">Theme</option><option value="impact">Impact</option><option value="actor">Actor</option></select><select id="ftag" style="display:none"><option value="">All</option></select></div>
+    <div class="sortbar"><label for="ssort">Sort</label><select id="ssort"><option value="latest">Latest</option><option value="recent">Most active</option><option value="volume">Volume</option><option value="rag">Priority</option><option value="negative">Most negative</option></select></div>
+    <button id="resetfilt" class="tldrbtn" style="display:none">Reset filters</button>
+  </div>
+  <section id="overview" class="on"><div class="kpis" id="kpis"></div><div id="ov-gap"></div><div id="ov-summary"></div>
     <div class="dsec" style="margin-top:18px">Sentiment over time <span class="info" tabindex="0" role="button" aria-label="Chart help">i<span class="tip">Daily counts of items stacked by sentiment — green positive, amber neutral, red negative. Hover or tap a bar for that day's breakdown.</span></span></div>
     <div class="leg"><span><i style="background:var(--green)"></i>positive</span><span><i style="background:var(--amber)"></i>neutral</span><span><i style="background:var(--red)"></i>negative</span></div>
     <div id="ov-trend"></div>
-    <div class="meta">Daily item counts as stacked columns. Server-aggregated from topic_trend_daily; refresh to update.</div>
     <div class="dsec" style="margin-top:22px">Public themes <span class="info" tabindex="0" role="button" aria-label="Word cloud help">i<span class="tip">Most-discussed themes in public posts across all tracked issues. Word size = how much that issue is discussed; colour = sentiment (red negative, amber mixed, green positive).</span></span></div>
     <div id="wordcloud"></div>
-    <div class="dsec" style="margin-top:22px">Latest headlines <span class="info" tabindex="0" role="button" aria-label="Headlines help">i<span class="tip">The most recent media articles across tracked topics, newest first. Tap to open the article. The full picture for any event is in Incidents.</span></span></div>
-    <div class="meta" style="margin-bottom:6px">Newest first. Tap to open the article.</div>
+    <div class="dsec" style="margin-top:22px">Latest headlines <span class="info" tabindex="0" role="button" aria-label="Headlines help">i<span class="tip">The five most recent media articles. Tap to open the article, or open the News tab for the full feed.</span></span></div>
     <div id="feed"></div>
+    <div style="margin-top:8px"><a href="#" id="morenews" class="lnk">More news →</a></div>
   </section>
-  <section id="stories"><div class="note">News — distinct events clustered from official, media and public signal (so 15 near-identical articles show as one event, not a repeating list). An event becomes a tracked Topic once the public engages with it. Tap for the gap and sources.</div>
-    <div class="sortbar"><label for="ssort">Sort</label><select id="ssort"><option value="recent">Most active</option><option value="volume">Volume</option><option value="rag">Priority</option><option value="negative">Most negative</option></select></div>
+  <section id="stories">
     <div id="stories-list"></div></section>
-  <section id="issues"><div class="note">Topics — events we are actively tracking, grouped under their category. An event is promoted here from News once the public engages (≥3 public posts/comments, or high engagement). Each carries its own official-vs-public gap.</div>
-    <div id="issues-list"></div></section>
+  <section id="incidents">
+    <div id="incidents-list"></div></section>
   <section id="sources"><div class="note">Where the corpus came from.</div><table id="src"><thead><tr><th>Source</th><th class="num">Items</th></tr></thead><tbody></tbody></table></section>
   <div class="loading" id="loading">Fetching live board…</div>
 </div>
-<div class="ov" id="ov"><div class="sheet"><div class="close"><div class="sharewrap"><button id="shareBtn">⤴ Share</button><div class="sharemenu" id="shareMenu"></div></div><div class="navgrp"><button id="navPrev" title="Previous issue (←)">‹ Prev</button><span id="navPos" class="navpos"></span><button id="navNext" title="Next issue (→)">Next ›</button><button onclick="closeDetail()">✕ Close</button></div></div><div id="detail"></div></div></div>
+<div class="ov" id="ov"><div class="sheet"><div class="close"><div class="sharewrap"><button id="shareBtn">⤴ Share</button><div class="sharemenu" id="shareMenu"></div></div><div class="navgrp"><button id="navPrev" title="Previous (←)" aria-label="Previous">‹</button><span id="navPos" class="navpos"></span><button id="navNext" title="Next (→)" aria-label="Next">›</button><button onclick="closeDetail()" title="Close (Esc)" aria-label="Close">✕</button></div></div><div id="detail"></div></div></div>
 <script>
 const SUPA="https://ymzyfsubemwgeboghtnk.supabase.co";
 const ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inltenlmc3ViZW13Z2Vib2dodG5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwMzg4MTYsImV4cCI6MjA5NTYxNDgxNn0.yoCIS0YsX2VETNqHdSd7IP7QqkyCHTS_CazIo1zNFKI";
@@ -160,7 +191,7 @@ function moodWord(sc){if(sc===null||sc===undefined)return '<span style="color:va
 function platOf(u){if(!u)return'';u=u.toLowerCase();if(u.includes('reddit'))return'Reddit';if(u.includes('youtube'))return'YouTube';if(u.includes('tiktok'))return'TikTok';if(u.includes('instagram'))return'Instagram';if(u.includes('facebook'))return'Facebook';if(u.includes('hardwarezone'))return'HardwareZone';if(u.includes('news.google'))return'News';return'';}
 const pctX=v=>Math.round((Math.max(-1,Math.min(1,v))+1)/2*100);
 let BOARD=null;
-let TLDR=false,CURRENT_TOPIC=null,CUR_KIND='topic',STORIES=[],STORY_SORT='recent',STORIES_KEY=null;try{TLDR=localStorage.getItem('tldr')==='1';}catch(e){}
+let TLDR=false,CURRENT_TOPIC=null,CUR_KIND='topic',STORIES=[],STORY_SORT='latest',STORIES_KEY=null;try{TLDR=localStorage.getItem('tldr')==='1';}catch(e){}
 const ICON={
  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
  news:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>',
@@ -186,7 +217,25 @@ function rulerHTML(pins,verdict,v){
   const xs=pins.map(p=>pctX(p.x));const lo=Math.min(...xs),w=Math.max(...xs)-lo;
   const band=v==='red'?'var(--red)':v==='green'?'var(--green)':'var(--amber)';
   const ps=pins.map(p=>`<div class="pin" style="left:${pctX(p.x)}%"><i style="background:${p.c}"></i><span style="color:${p.c}">${p.t}</span></div>`).join('');
-  return `<div class="ruler"><div class="rh"><b>Tone of reception</b><span class="vb ${v}">${verdict}</span></div><div class="track"><div class="base"></div><div class="span" style="left:${lo}%;width:${w}%;background:${band}"></div>${ps}</div><div class="rends"><span>hostile</span><span>warm</span></div></div>`;
+  return `<div class="ruler"><div class="rh"><b>Tone of reception</b><span class="vb ${v}">${verdict}</span></div><div class="track"><div class="base"></div><div class="span" style="left:${lo}%;width:${w}%;background:${band}"></div>${ps}</div><div class="rends"><span>negative</span><span>positive</span></div></div>`;
+}
+function toneCol(x){return x>=0.15?'var(--green)':x<=-0.15?'var(--red)':'var(--amber)';}
+function fmtSent(x){const v=num(x);return (v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2);}
+function gapPane(label,off,otherSent,otherN,gp){
+  const head=`Official ↔ ${label}`;
+  if(!off) return `<div class="lane gpane empty"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">No official line captured — gap not assessed.</p></div>`;
+  if(!otherN||otherSent==null) return `<div class="lane gpane empty"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">No ${label.toLowerCase()} captured in this window.</p></div>`;
+  const ox=pctX(num(off.sent)), tx=pctX(num(otherSent)); const lo=Math.min(ox,tx), w=Math.max(2,Math.abs(ox-tx));
+  const dist=Math.abs(num(off.sent)-num(otherSent));
+  const oc=toneCol(num(off.sent)), tc=toneCol(num(otherSent));
+  return `<div class="lane gpane"><h5>${head} <span class="vb ${gp.v}">${gp.verdict}</span></h5>`
+    +`<div class="gtrack"><div class="gbase"></div><div class="gzero"></div>`
+    +`<div class="gspan" style="left:${lo}%;width:${w}%"></div>`
+    +`<i class="gdot" style="left:${ox}%;background:${oc}" title="Official ${fmtSent(off.sent)}"></i>`
+    +`<i class="gdot" style="left:${tx}%;background:${tc}" title="${label} ${fmtSent(otherSent)}"></i></div>`
+    +`<div class="gends"><span>negative</span><span>positive</span></div>`
+    +`<div class="glegend"><span><i style="background:${oc}"></i>Official ${fmtSent(off.sent)}</span><span><i style="background:${tc}"></i>${label} ${fmtSent(otherSent)}</span><span class="gd">gap ${dist.toFixed(2)}</span></div>`
+    +`<div class="gapsum" style="margin-top:10px">${strip(gp.detail||'')}</div></div>`;
 }
 function issueRow(s){
   if(TLDR){
@@ -207,40 +256,59 @@ const ISSUE_SORTS={
   topic:(a,b)=>nameOf(a.topic).localeCompare(nameOf(b.topic))};
 let CURRENT_SORT='rag';
 function sortedTopics(){return BOARD?[...BOARD.issues].sort(ISSUE_SORTS[CURRENT_SORT]||ISSUE_SORTS.rag).map(i=>i.topic):[];}
+function facetLine(d){const seg=(l,a)=>a&&a.length?l+': '+a.join(', '):null;return [seg('Domain',d.domains),seg('Theme',d.themes),seg('Impact',d.impacts),seg('Actor',d.actors)].filter(Boolean).join('  ·  ');}
 function storyRow(s,kind){
   const da=kind==='news'?`data-media="${encodeURIComponent(s.id)}"`:`data-story="${encodeURIComponent(s.id)}"`;
-  const cats=(s.cats||[]).map(nameOf).join(' · ');
+  const tagHtml=[...(s.domains||[]),...(s.themes||[])].slice(0,5).map(x=>`<span class="kw">${x}</span>`).join(' ');
   const vol=s.public_n+s.media_n;
   const sc=s.status==='active'?'var(--accent)':s.status==='emerging'?'var(--amber)':'var(--mut)';
   const stat=(kind!=='news'&&s.status)?`<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;border:1px solid ${sc};color:${sc}">${s.status}</span>`:'';
   if(TLDR)return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><span class="t" style="flex:1">${s.title}</span>${stat}<span class="meta" style="margin:0">${moodWord(s.sent)} · ${vol}</span><span class="chev">›</span></div>`;
   const g=s.media_n>0?` · media ${s.media_n}`:'';
   const cta=kind==='news'?'Coverage ›':'Details ›';
-  return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="t">${s.title}</span>${stat}</div><div class="c">${cats||'—'}</div><div class="meta">public ${s.public_n}${g} · ${moodWord(s.sent)} · last ${s.last}</div></div><span class="chev">${cta}</span></div>`;
+  return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="t">${s.title}</span>${stat}</div><div class="c" style="display:flex;flex-wrap:wrap;gap:4px;margin:3px 0">${tagHtml||'—'}</div><div class="meta">public ${s.public_n}${g} · ${moodWord(s.sent)} · last ${s.last}</div></div><span class="chev">${cta}</span></div>`;
 }
 const STAT_ORD={active:0,emerging:1,quiet:2};
 const STORY_SORTS={
   recent:(a,b)=>((STAT_ORD[a.status]??9)-(STAT_ORD[b.status]??9))||((b.public_n+b.media_n)-(a.public_n+a.media_n)),
   volume:(a,b)=>(b.public_n+b.media_n)-(a.public_n+a.media_n),
   rag:(a,b)=>(RAG_ORD[a.rag]-RAG_ORD[b.rag])||((b.public_n+b.media_n)-(a.public_n+a.media_n)),
-  negative:(a,b)=>num(a.sent)-num(b.sent)};
+  negative:(a,b)=>num(a.sent)-num(b.sent),
+  latest:(a,b)=>0};
 function sortedStories(){return [...STORIES].sort(STORY_SORTS[STORY_SORT]||STORY_SORTS.recent).map(s=>s.id);}
-function drawStories(){lazyList(document.getElementById("stories-list"),[...STORIES].sort(STORY_SORTS[STORY_SORT]||STORY_SORTS.recent),s=>storyRow(s,'news'),8);}
-function drawTopics(){
-  const el=document.getElementById("issues-list");
-  const promoted=STORIES.filter(s=>s.promoted);
-  if(!promoted.length){el.innerHTML='<div class="meta">No tracked Topics yet. An event becomes a Topic once the public engages with it (≥3 public posts/comments, or high engagement); until then it sits under News.</div>';return;}
-  const groups={};
-  promoted.forEach(s=>{const c=nameOf(s.cat||(s.cats&&s.cats[0])||'Other'); (groups[c]=groups[c]||[]).push(s);});
-  el.innerHTML=Object.keys(groups).sort().map(c=>`<div class="dsec" style="margin-top:14px">${c} <span class="meta" style="font-weight:400">· ${groups[c].length}</span></div>`+groups[c].sort((a,b)=>(b.public_n+b.media_n)-(a.public_n+a.media_n)).map(s=>storyRow(s,'topic')).join('')).join('');
-}
+let LENS='domain', FILTER={facet:null,tag:null}, NEWS=[], NEWS_KEY=null;
+function ragDotOnly(sc){const v=num(sc);const c=v<-0.1?'var(--red)':v>0.1?'var(--green)':'var(--amber)';return `<span style="color:${c}" title="${v<-0.1?'negative':v>0.1?'positive':'neutral'}">●</span>`;}
+function articleRow(a){return `<div class="feedrow"><a href="${a.u}" target="_blank" rel="noopener">${a.t} ↗</a><div class="fm"><span style="color:var(--ink);font-weight:600">${a.d}</span>${a.dom?`<span class="fchip">${a.dom}</span>`:''}${TLDR?ragDotOnly(a.sc):ragDot(a.sc)}</div></div>`;}
+function drawStories(){let arr=[...NEWS];if(STORY_SORT==='negative')arr.sort((a,b)=>num(a.sc)-num(b.sc));lazyList(document.getElementById("stories-list"),arr,articleRow,12);}
+function storiesKey(){return RANGE.from+'|'+RANGE.to+'|'+(FILTER.tag||'');}
+function drawFilterChip(){const r=document.getElementById("resetfilt");if(r)r.style.display=(FILTER&&FILTER.tag)?'':'none';}
+let ISORT='recent';
+function drawIncidents(){const el=document.getElementById("incidents-list");const promoted=[...STORIES].filter(s=>s.promoted).sort(STORY_SORTS[STORY_SORT]||STORY_SORTS.recent);if(!promoted.length){el.innerHTML=emptyState('No tracked incidents'+(FILTER.tag?' for '+FILTER.tag:'')+' here',FILTER.tag?'Try a wider range or clear the filter.':'Nothing has been promoted to a tracked issue in this window.');return;}lazyList(el,promoted,s=>storyRow(s,'topic'),8);}
+function renderIncidents(){drawFilterChip();if(STORIES_KEY!==storiesKey())document.getElementById("incidents-list").innerHTML=skelList(6);ensureStories(drawIncidents);}
 function ensureStories(cb){
-  const key=RANGE.from+'|'+RANGE.to;
-  if(STORIES_KEY===key){cb();return;}
-  rpc('get_stories',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{STORIES=rows||[];STORIES_KEY=key;cb();}).catch(()=>{});
+  const k=storiesKey();
+  if(STORIES_KEY===k){cb();return;}
+  rpc('get_stories',{p_from:RANGE.from,p_to:RANGE.to,p_facet:FILTER.facet,p_tag:FILTER.tag}).then(rows=>{STORIES=rows||[];STORIES_KEY=k;cb();}).catch(()=>{});
 }
-function renderStories(){if(STORIES_KEY!==RANGE.from+'|'+RANGE.to)document.getElementById("stories-list").innerHTML='<div class="meta">Loading news…</div>';ensureStories(drawStories);}
-function renderTopics(){if(STORIES_KEY!==RANGE.from+'|'+RANGE.to)document.getElementById("issues-list").innerHTML='<div class="meta">Loading topics…</div>';ensureStories(drawTopics);}
+function renderStories(){drawFilterChip();const k=RANGE.from+'|'+RANGE.to+'|'+(FILTER.tag||'');if(NEWS_KEY!==k){document.getElementById("stories-list").innerHTML=skelList(6);rpc('get_news',{p_from:RANGE.from,p_to:RANGE.to,p_facet:FILTER.facet,p_tag:FILTER.tag}).then(rows=>{NEWS=rows||[];NEWS_KEY=k;drawStories();}).catch(e=>{document.getElementById("stories-list").innerHTML='<div class="onreq">Could not load news: '+e.message+'</div>';});}else drawStories();}
+function renderFacetBoard(){
+  const el=document.getElementById("issues-list");el.innerHTML='<div class="meta">Loading board…</div>';
+  rpc('get_facets',{p_facet:LENS,p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{
+    if(!rows||!rows.length){el.innerHTML='<div class="meta">No tagged items in this window.</div>';return;}
+    el.innerHTML=rows.map(f=>`<div class="row" data-facet="${LENS}" data-tag="${encodeURIComponent(f.tag)}"><span class="dot d-${f.rag}"></span><div style="flex:1"><span class="t">${f.tag}</span><div class="meta">public ${f.public_n} · media ${f.media_n} · ${moodWord(f.sent)}</div></div><span class="chev">${f.n} ›</span></div>`).join('');
+  }).catch(e=>{el.innerHTML='<div class="onreq">Could not load board: '+e.message+'</div>';});
+}
+function populateFTags(facet,sel){const ft=document.getElementById("ftag");if(!ft)return Promise.resolve();
+  return rpc('get_facets',{p_facet:facet,p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{
+    ft.innerHTML='<option value="">All</option>'+(rows||[]).map(f=>`<option value="${String(f.tag).replace(/"/g,'&quot;')}">${f.tag}</option>`).join('');
+    ft.value=sel||'';
+  }).catch(()=>{});}
+function applyFacetFilter(facet,tag){ FILTER={facet,tag};
+  const ff=document.getElementById("ffacet"); if(ff){ff.value=facet; populateFTags(facet,tag);}
+  const tabs=document.getElementById("tabs"); [...tabs.children].forEach(x=>x.classList.toggle("on",x.dataset.v==='stories'));
+  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id==='stories'));
+  window.scrollTo(0,0); renderStories(); }
+function clearFacetFilter(){ FILTER={facet:null,tag:null}; if(document.getElementById("incidents").classList.contains("on"))renderIncidents(); else renderStories(); }
 function sortedList(){return CUR_KIND==='topic'?sortedTopics():sortedStories();}
 function renderIssues(sortKey){
   CURRENT_SORT=sortKey||CURRENT_SORT;
@@ -253,7 +321,7 @@ async function openDetail(topic,kind){
   CURRENT_TOPIC=topic;CUR_KIND=kind;
   try{const h=(kind==='story'?'story=':'issue=')+encodeURIComponent(topic);if((location.hash||'').slice(1)!==h)location.hash=h;}catch(e){}
   updateNav();
-  document.getElementById("detail").innerHTML='<div class="loading">Loading detail…</div>';
+  document.getElementById("detail").innerHTML='<div class="sk" style="height:22px;width:62%;margin:4px 0 14px"></div>'+skelList(4);
   document.getElementById("ov").classList.add("on");
   if(window.gtag)gtag('event',kind==='story'?'story_open':'issue_open',{topic:kind==='story'?topic:codeOf(topic)});
   let d;try{d=kind==='story'?await rpc('get_story_detail',{p_story_id:topic,p_from:RANGE.from,p_to:RANGE.to}):await rpc('get_topic_detail',{p_topic:topic,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load detail: '+e.message+'</div>';return;}
@@ -264,7 +332,10 @@ async function openDetail(topic,kind){
   const summary=`${d.public_n+d.media_n} item${(d.public_n+d.media_n)===1?'':'s'} this window · ${moodTone} tone overall.${off?'':' No official line captured yet (external signal).'}`;
   const mcard=(l,val,ic)=>`<div class="m"><div class="mhead"><div class="l">${l}</div><span class="mic">${ic}</span></div><div class="n">${val}</div></div>`;
   const metrics=`<div class="mgrid">${mcard('Public items',d.public_n,ICON.users)}${mcard('Media items',d.media_n,ICON.news)}${mcard('Engagement',Number(d.engagement||0).toLocaleString('en-SG'),ICON.heart)}${mcard('Negative share',negshare+'%',ICON.warn)}</div>`;
-  const sbar=`<div class="sbar"><i class="pos" style="width:${d.pos/tot*100}%"></i><i class="neu" style="width:${d.neu/tot*100}%"></i><i class="neg" style="width:${d.neg/tot*100}%"></i></div><div class="sleg">positive ${d.pos} (${Math.round(d.pos/tot*100)}%) · neutral ${d.neu} (${Math.round(d.neu/tot*100)}%) · negative ${d.neg} (${Math.round(d.neg/tot*100)}%)</div>`;
+  const hasPub=d.pub_pos!=null;
+  const PP=hasPub?(d.pub_pos||0):d.pos, PU=hasPub?(d.pub_neu||0):d.neu, PG=hasPub?(d.pub_neg||0):d.neg;
+  const ptot=Math.max(1,PP+PU+PG);
+  const sbar=`<div class="dsec" style="margin-top:6px">${hasPub?'Public sentiment':'Sentiment'} ${info("How the public posts and comments on this incident break down — positive, neutral, negative. The official and media stances appear in the comparison below.")}</div><div class="sbar"><i class="pos" style="width:${PP/ptot*100}%"></i><i class="neu" style="width:${PU/ptot*100}%"></i><i class="neg" style="width:${PG/ptot*100}%"></i></div><div class="sleg">positive ${PP} (${Math.round(PP/ptot*100)}%) · neutral ${PU} (${Math.round(PU/ptot*100)}%) · negative ${PG} (${Math.round(PG/ptot*100)}%)</div>`;
   const pubrange=d.pub_first?(d.pub_first===d.pub_last?d.pub_first:`${d.pub_first}–${d.pub_last}`):'this window';
   const seq=off
     ?`<div class="dsec">Event ${info("The sequence: when the official line was issued, and the window of public reaction that followed.")}</div><div class="seq"><span class="seqn off">Official line · ${off.date}</span><span class="chev">→</span><span class="seqn pub">Public reaction · ${pubrange}</span></div>`
@@ -284,13 +355,14 @@ async function openDetail(topic,kind){
   const pubBox=d.public_n>0?`<p>${briefOK(d.public_n)&&sm.pub?sm.pub:(pubGist?'Public posts said: '+pubGist:`${d.public_n} public post${d.public_n>1?'s':''}, ${moodWord(d.pub_sent)} tone.`)}</p><div class="stance">${d.public_n} item${d.public_n!==1?'s':''} · ${moodWord(d.pub_sent)}</div>`:`<p>No public discussion in this window.</p>`;
   const pins=[];if(off&&off.sent!=null)pins.push({t:'Official',x:num(off.sent),c:'var(--accent)'});if(d.media_n>0)pins.push({t:'Media',x:num(d.med_sent),c:'var(--ink)'});if(d.public_n>0)pins.push({t:'Public',x:num(d.pub_sent),c:'var(--mut)'});
   const gapPair=(label,n,cs,insight,kwCp)=>{
-    if(!off) return {t:`<b>Official ↔ ${label}:</b> no official line — not assessed`,short:`<b>${label}:</b> no official line`,v:'amber'};
-    if(!n||cs==null) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber'};
+    if(!off) return {t:`<b>Official ↔ ${label}:</b> no official line — not assessed`,short:`<b>${label}:</b> no official line`,v:'amber',verdict:'no official line',detail:'No official line captured — gap not assessed.'};
+    if(!n||cs==null) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber',verdict:'no data',detail:`No ${label.toLowerCase()} captured in this window.`};
     const dist=Math.abs(num(off.sent)-num(cs)); const verdict=dist>0.3?'divergence':'aligned'; const vv=dist>0.3?'red':'green';
-    const detail=(insight&&n>=3)?insight:`${label.toLowerCase()} reception runs ${num(cs)<num(off.sent)?'more negative':'more positive'} than the official tone`;
+    const toneW=x=>x<=-0.15?'negative':x>=0.15?'positive':'neutral';
+    const detail=insight?insight:`${label} reaction is ${toneW(num(cs))} (avg ${num(cs).toFixed(2)}) against a ${toneW(num(off.sent))} official line${off.sent!=null?` (${num(off.sent).toFixed(2)})`:''} — from ${n} ${label.toLowerCase()} item${n!==1?'s':''}.`;
     const offK=kwShort(sm.kw_off,3), cpK=kwShort(kwCp,3);
     const short=(offK&&cpK)?`<b>${label} — ${verdict}:</b> ${offK} ↔ ${cpK}`:`<b>${label} — ${verdict}:</b> ${clipW(detail,10)}`;
-    return {t:`<b>Official ↔ ${label} — ${verdict}:</b> ${detail}`,short,v:vv};
+    return {t:`<b>Official ↔ ${label} — ${verdict}:</b> ${detail}`,short,v:vv,verdict,detail:TLDR?(short.replace(/<\/?b>/g,'')):detail};
   };
   const gPub=gapPair('Public',d.public_n,d.pub_sent,sm.gap_pub,sm.kw_pub), gMed=gapPair('Media',d.media_n,d.med_sent,sm.gap_med,sm.kw_med);
   let v,verdict;
@@ -306,15 +378,17 @@ async function openDetail(topic,kind){
   const nq=(d.quotes||[]).length+(d.news||[]).length+(off?1:0);
   const verb=nq?`<details><summary>Sources (${nq})</summary>${offV?`<div class="dsec">Official line</div>${offV}`:''}${pubV?`<div class="dsec">Public posts</div>${pubV}`:''}${newsV?`<div class="dsec">Referenced news</div>${newsV}`:''}</details>`:'';
   document.getElementById("detail").innerHTML=`
-    <div class="dsum" style="color:var(--mut);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em">${kind==='story'?((d.cats||[]).map(nameOf).join(' · ')+(d.status?' · '+d.status:'')):(EXEC?(d.max_sev>0?sevWord(d.max_sev)+' severity':'Issue'):nameOf(topic)+(d.max_sev>0?` · ⚠ ${Math.round(d.max_sev)}`:''))}</div>
+    <div class="dsum" style="color:var(--mut);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em">${kind==='story'?(d.status||'Incident'):(EXEC?(d.max_sev>0?sevWord(d.max_sev)+' severity':'Issue'):nameOf(topic)+(d.max_sev>0?` · ⚠ ${Math.round(d.max_sev)}`:''))}</div>
     <div class="dtitle">${title}</div>
     ${TLDR?'':`<p class="dsum">${summary}</p>
     <div class="dsum" style="font-size:12px">Window: last 30 days${d.pub_last?` · latest public post ${d.pub_last}`:''}</div>`}
-    ${metrics}${sbar}${TLDR?'':seq}
+    ${metrics}${sbar}
     <div class="dsec">Compare — official · media · public ${info("What each side said — the official statement, the media coverage, and the public reaction. In TL;DR mode these condense to keyword tags.")}</div>
     <div class="lanes"><div class="lane off ${off?'':'empty'}"><h5><span class="ic">${ICON.landmark}</span>Official</h5>${oB}</div><div class="lane med ${d.media_n>0?'':'empty'}"><h5><span class="ic">${ICON.news}</span>Media</h5>${mB}</div><div class="lane pub"><h5><span class="ic">${ICON.users}</span>Public</h5>${pB}</div></div>
-    <div class="gapbox"><div class="dsec" style="margin-top:0">The gap ${info("How far the official tone sits from how the public and media received it, on a hostile→warm scale. Flagged 'divergence' when they differ by more than 0.3, 'aligned' when close. Each side is compared to the official line separately. Sentiment is a qualitative read, not a precise measure.")}</div>${rulerHTML(pins,verdict,v)}<div class="gapsum">${strip(gapSummary)}</div></div>
-    ${verb}`;
+    <div class="dsec">The gap ${info("Each dot is the tone of what that side actually said, on a negative→positive scale. The Official dot reflects the tone of the official message itself — a warning, advisory or enforcement action sits on the negative side because the message is cautionary, not a mark against the issuing body. 'Divergence' means a side differs from the official tone by more than 0.3; 'aligned' means they are close. So an official warning that the public also takes negatively is aligned — the public shares the concern and the message landed. The gap to watch is the official tone positive but the public negative, or the reverse. Sentiment is a qualitative read, not a precise measure.")}</div>
+    <div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>
+    ${verb}
+    <div class="meta" style="margin-top:16px;border-top:1px solid var(--barbg);padding-top:8px">${kind==='story'&&d.trig?'Trigger '+d.trig+(facetLine(d)?' · ':''):''}${facetLine(d)?'Facets — '+facetLine(d):''}</div>`;
 }
 function closeDetail(){document.getElementById("ov").classList.remove("on");closeShareMenu();if(getHashIssue()||getHashStory()||getHashNews())history.replaceState(null,'',location.pathname+location.search);}
 function openByKind(id,kind){return kind==='media'?openMedia(id):openDetail(id,kind);}
@@ -322,21 +396,21 @@ async function openMedia(id){
   CURRENT_TOPIC=id;CUR_KIND='media';
   try{const h='news='+encodeURIComponent(id);if((location.hash||'').slice(1)!==h)location.hash=h;}catch(e){}
   updateNav();
-  document.getElementById("detail").innerHTML='<div class="loading">Loading coverage…</div>';
+  document.getElementById("detail").innerHTML='<div class="sk" style="height:22px;width:55%;margin:4px 0 14px"></div>'+skelList(5);
   document.getElementById("ov").classList.add("on");
   let d;try{d=await rpc('get_story_detail',{p_story_id:id,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load coverage: '+e.message+'</div>';return;}
-  const cats=(d.cats||[]).map(c=>`<span class="kw">${nameOf(c)}</span>`).join(' ');
+  const fl=facetLine(d);
   const news=(d.news||[]);
-  const artList=news.length?news.map(n=>`<div class="dq" style="font-style:normal">${n.t}<span class="src">${platOf(n.u)||'news media'} · ${n.d} · ${ragDot(n.sc)}${n.u?` · <a class="lnk" href="${n.u}" target="_blank" rel="noopener">read article ↗</a>`:''}</span></div>`).join(''):'<div class="meta">No media articles in this window.</div>';
+  const artList=news.length?news.map(n=>`<div class="dq" style="font-style:normal">${n.t}<span class="src">${platOf(n.u)||'news media'} · ${n.d} · ${ragDot(n.sc)}${n.u?` · <a class="lnk" href="${n.u}" target="_blank" rel="noopener">read article ↗</a>`:''}</span></div>`).join(''):emptyState('No media articles here','No coverage captured in this window.');
   const pub=(d.quotes||[]);
   const pubList=pub.map(q=>`<div class="dq">“${q.q}”<span class="src">${platOf(q.u)||'public'} · ${q.d} · ${ragDot(q.sc)}${q.u?` · <a class="lnk" href="${q.u}" target="_blank" rel="noopener">source ↗</a>`:''}</span></div>`).join('');
   document.getElementById("detail").innerHTML=`
     <div class="dsum" style="color:var(--mut);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em">Media coverage</div>
     <div class="dtitle">${d.title||'Coverage'}</div>
-    ${cats?`<div style="margin:6px 0 10px">${cats}</div>`:''}
     <div class="dsec">Articles (${news.length})</div>
     ${artList}
-    ${pubList?`<div class="dsec" style="margin-top:14px">Public posts</div>${pubList}`:''}`;
+    ${pubList?`<div class="dsec" style="margin-top:14px">Public posts</div>${pubList}`:''}
+    ${fl?`<div class="meta" style="margin-top:16px;border-top:1px solid var(--barbg);padding-top:8px">Facets — ${fl}</div>`:''}`;
 }
 // --- share + deep-link ---
 function getHashIssue(){const m=/[#&]issue=([^&]+)/.exec(location.hash||'');return m?decodeURIComponent(m[1]):null;}
@@ -384,6 +458,10 @@ function renderCloud(words){
     if(!done) sp.remove();
   });
 }
+// Shimmer skeleton rows shown while a list loads (matches the row shape).
+function skelList(n){let r='<div class="skel">';for(let i=0;i<(n||6);i++){const w=58+((i*17)%34);r+=`<div class="skrow"><span class="skdot"></span><div class="skb"><div class="sk" style="height:12px;width:${w}%"></div><div class="sk" style="height:9px;width:${Math.max(28,w-26)}%;margin-top:8px;opacity:.6"></div></div></div>`;}return r+'</div>';}
+// Consistent empty state: small search icon + a line and optional subline.
+function emptyState(t,s){return `<div class="estate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><line x1="15.8" y1="15.8" x2="21" y2="21"/></svg><div class="et">${t}</div>${s?`<div class="es">${s}</div>`:''}</div>`;}
 // Progressive list: render a batch, load more as a sentinel scrolls into view. A hidden tab's
 // list stays unbuilt until the tab is opened (sentinel not in viewport until then).
 function lazyList(container, items, rowFn, batch){
@@ -401,44 +479,62 @@ function lazyList(container, items, rowFn, batch){
   };
   const obs=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)) step(); },{rootMargin:'300px'});
   container._obs=obs;
-  if(items.length) obs.observe(sent); else container.innerHTML='<div class="meta">Nothing in this window.</div>';
+  if(items.length) obs.observe(sent); else container.innerHTML=emptyState('Nothing in this window','Widen the time range to see more.');
 }
-function loadCapStatus(){const el=document.getElementById("capstat");if(!el)return;
-  rpc('get_capture_status').then(s=>{ if(!s){el.textContent='';return;}
-    const spend=Number(s.spend||0), cap=Number(s.cap||30); const pct=cap?Math.round(spend/cap*100):0;
-    const c=pct>=100?'var(--red)':pct>=80?'var(--amber)':'var(--mut)';
-    el.innerHTML=`Last capture ${s.last_capture||'—'} · this month <span style="color:${c}">US$${spend.toFixed(2)} / US$${cap.toFixed(0)}</span>`;
-  }).catch(()=>{el.textContent='';});}
+function loadCapStatus(){ rpc('get_capture_status').then(s=>{ if(s&&s.last_capture){LAST_CAP=s.last_capture; setSub();} }).catch(()=>{});}
+let SUB_ITEMS=0,LAST_CAP='';
+function setSub(){const el=document.getElementById("sub");if(el)el.textContent=LAST_CAP?('Last updated '+LAST_CAP):(SUB_ITEMS?'Live · '+SUB_ITEMS+' items':'Loading…');}
+function sentGauge(v){const p=pctX(num(v));return `<div style="position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--red),var(--amber) 50%,var(--green));margin:7px 0 2px"><span style="position:absolute;left:${p}%;transform:translateX(-50%);top:-2px;width:3px;height:10px;background:var(--ink);border-radius:1px;box-shadow:0 0 0 1.5px var(--card)"></span></div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mut)"><span>−1</span><span>0</span><span>+1</span></div>`;}
 function render(B){
   BOARD=B;const m=B.meta;
   document.getElementById("loading").style.display="none";
-  document.getElementById("sub").textContent=`Live · ${m.total} items · as of ${new Date(m.generated).toLocaleString('en-SG',{dateStyle:'medium',timeStyle:'short'})}`;
+  SUB_ITEMS=m.total; setSub();
   const flagged=B.issues.filter(i=>i.rag==='red'||i.rag==='amber').length;
+  const _tot=B.issues.length||1,_red=B.issues.filter(i=>i.rag==='red').length,_amb=B.issues.filter(i=>i.rag==='amber').length;
+  const _pubPct=m.total?Math.round(m.public/m.total*100):0,_newsPct=m.total?Math.round(m.news/m.total*100):0;
   document.getElementById("kpis").innerHTML=`
-    <div class="kpi"><div class="n">${m.total}</div><div class="l">Items</div><div class="x">Public ${m.public} · News ${m.news}</div></div>
-    <div class="kpi"><div class="n">${flagged}</div><div class="l">Issues</div><div class="x">red + amber</div></div>
-    <div class="kpi"><div class="n">${Math.round(m.avg_sent*100)}%</div><div class="l">Sentiment</div><div class="x">avg ${(+m.avg_sent).toFixed(2)}</div></div>
-    <div class="kpi"><div class="n">${m.official}</div><div class="l">Official refs</div><div class="x">in store</div></div>`;
+    <div class="kpi"><div class="n">${m.total}</div><div class="l">Items ${info("All items captured in this window — official sources, media articles and public posts/comments. Public% and News% are each side's share of the total.")}</div><div class="x">Public ${_pubPct}% · News ${_newsPct}%</div></div>
+    <div class="kpi"><div class="n">${flagged}</div><div class="l">Issues ${info("Tracked issues flagged red (negative reception) or amber (mixed). The dots show the share of all issues that are red and amber.")}</div><div class="x"><span style="color:var(--red)">●</span> ${Math.round(_red/_tot*100)}% <span style="color:var(--amber)">●</span> ${Math.round(_amb/_tot*100)}%</div></div>
+    <div class="kpi"><div class="n">${moodWord(m.avg_sent)}</div><div class="l">Sentiment ${info("Overall mood across all items on a −1 to +1 scale, shown as a band: Negative, Mixed or Positive. The gauge marks the average. A qualitative read, not a precise measure.")}</div><div class="x" title="average ${(+m.avg_sent).toFixed(2)} on a −1 to +1 scale">${sentGauge(m.avg_sent)}</div></div>
+    <div class="kpi"><div class="n">${m.official}</div><div class="l">Official refs ${info("Official sources captured (IMDA / CSA / POFMA / MOM) — the baseline the gap is measured against.")}</div><div class="x">in store</div></div>`;
   const red=B.issues.filter(i=>i.rag==='red').length,amb=B.issues.filter(i=>i.rag==='amber').length,grn=B.issues.filter(i=>i.rag==='green').length,gry=B.issues.filter(i=>i.rag==='grey').length,tot=B.issues.length;
   const flaggedIssues=B.issues.filter(i=>i.rag==='red'||i.rag==='amber');
   const loud=[...B.issues].sort((a,b)=>(b.public_n+b.media_n)-(a.public_n+a.media_n))[0];
   const neg=[...(flaggedIssues.length?flaggedIssues:B.issues)].sort((a,b)=>num(a.sent)-num(b.sent))[0];
   const seg=(n,c)=>n?`<span style="width:${n/tot*100}%;background:${c}"></span>`:'';
   document.getElementById("ov-summary").innerHTML=`${TLDR?'':`<p style="font-size:15px;margin:14px 0 8px">${red+amb} issue${red+amb===1?'':'s'} flagged — <span style="color:var(--red)">${red} red</span>, <span style="color:var(--amber)">${amb} amber</span>.${loud?` Loudest: <strong>${nameOf(loud.topic)}</strong> (${loud.public_n+loud.media_n} items).`:''}${neg?` Most negative: <strong>${nameOf(neg.topic)}</strong>.`:''}</p>`}<div style="display:flex;height:9px;border-radius:4px;overflow:hidden;background:var(--barbg)">${seg(red,'var(--red)')}${seg(amb,'var(--amber)')}${seg(grn,'var(--green)')}${seg(gry,'var(--mut)')}</div><div class="meta">${red} red · ${amb} amber · ${grn} green${gry?` · ${gry} grey (low evidence)`:''} across ${tot} topics</div>`;
+  rpc('get_gap_summary',{p_from:RANGE.from,p_to:RANGE.to}).then(gs=>{const el=document.getElementById("ov-gap");if(!el)return;
+    if(!gs||!gs.total){el.innerHTML=`<div class="gapcard" style="cursor:default;border-left-color:var(--mut)"><div class="dsec" style="margin-top:0">Official vs public gap ${info("How tracked issues that have both an official line and public reaction split between divergence (public differs from the official tone by more than 0.3) and aligned. The official tone is the valence of the message itself — a warning or enforcement action reads negative by design, so official-negative with public-negative counts as aligned.")}</div><div class="meta">No tracked issue with both an official line and public reaction in this window yet.</div></div>`;return;}
+    const top=gs.top||{};
+    el.innerHTML=`<div class="gapcard" ${top.id?`data-gapcard="${encodeURIComponent(top.id)}"`:''}><div class="dsec" style="margin-top:0">Official vs public gap ${info("Across tracked issues that have an official line and public reaction: how many diverge (public differs from the official tone by more than 0.3) vs align. The official tone is the valence of the official message itself, so a warning or enforcement action reads negative by design — an issue where the public is also negative counts as aligned, not a problem. Tap to open the widest.")}</div><div style="font-size:15px;margin:3px 0 5px"><span style="color:var(--red);font-weight:700">${gs.divergence} divergence</span> · <span style="color:var(--green);font-weight:700">${gs.aligned} aligned</span> <span class="meta">of ${gs.total} with an official line</span></div>${top.title?`<div class="meta">Widest — <strong>${top.title}</strong>: public runs ${top.dir} (${top.verdict})</div>`:''}</div>`;
+  }).catch(()=>{});
   const _tr=document.getElementById("ov-trend");_tr.innerHTML=trendSVG(B.trend);_tr.appendChild(trendTip);
   document.getElementById("wordcloud").innerHTML='<div class="meta">Loading themes…</div>';
   rpc('get_wordcloud',{p_from:RANGE.from,p_to:RANGE.to}).then(renderCloud).catch(()=>{});
-  lazyList(document.getElementById("feed"),(B.feed||[]),f=>`<div class="feedrow"><a href="${f.u}" target="_blank" rel="noopener">${f.t} ↗</a><div class="fm"><span style="color:var(--ink);font-weight:600">${fdate(f.d)}${f.tm?', '+f.tm:''}</span><span class="fchip">${nameOf(f.tp)}</span>${ragDot(f.sc)}</div></div>`,10);
+  rpc('get_news',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{document.getElementById("feed").innerHTML=(rows||[]).slice(0,5).map(articleRow).join('')||emptyState('No headlines yet','Nothing captured in this window.');}).catch(()=>{});
   document.querySelector("#src tbody").innerHTML=(B.sources||[]).map(s=>`<tr><td>${s.s}</td><td class="num">${s.n}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="num"><strong>${m.total}</strong></td></tr>`;
-  loadCapStatus();
+  loadCapStatus();updateCtrlSum();
 }
-document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===b.dataset.v));window.scrollTo(0,0);if(b.dataset.v==='overview')renderCloud();if(b.dataset.v==='stories')renderStories();if(b.dataset.v==='issues')renderTopics();if(window.gtag)gtag('event','tab_view',{tab:b.dataset.v});});
-document.getElementById("ssort").addEventListener("change",e=>{STORY_SORT=e.target.value;drawStories();});
+document.getElementById("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===b.dataset.v));window.scrollTo(0,0);if(b.dataset.v==='overview')renderCloud();if(b.dataset.v==='stories')renderStories();if(b.dataset.v==='incidents')renderIncidents();if(window.gtag)gtag('event','tab_view',{tab:b.dataset.v});});
+document.getElementById("ssort").addEventListener("change",e=>{STORY_SORT=e.target.value;if(document.getElementById("incidents").classList.contains("on"))drawIncidents();else drawStories();updateCtrlSum();});
+document.getElementById("filtbtn").addEventListener("click",()=>{const c=document.getElementById("controls");c.hidden=!c.hidden;});
+document.getElementById("resetfilt").addEventListener("click",()=>{const ff=document.getElementById("ffacet"),ft=document.getElementById("ftag");ff.value='';ft.style.display='none';ft.innerHTML='<option value="">All</option>';FILTER={facet:null,tag:null};refreshActiveList();updateCtrlSum();drawFilterChip();});
+function updateCtrlSum(){const el=document.getElementById("ctrlsum");if(!el)return;const rs=document.querySelector('#range span.on');const range=rs?rs.textContent:'30d';const filt=FILTER&&FILTER.tag?(FILTER.facet+': '+FILTER.tag):'All';const so=document.getElementById("ssort");const sort=so?so.options[so.selectedIndex].text:'';el.textContent=`${range} · ${filt} · ${sort}`;}
+document.getElementById("ffacet").addEventListener("change",e=>{const f=e.target.value;const ft=document.getElementById("ftag");if(!f){ft.style.display='none';ft.innerHTML='<option value="">All</option>';FILTER={facet:null,tag:null};refreshActiveList();updateCtrlSum();return;}ft.style.display='';FILTER={facet:f,tag:null};populateFTags(f);refreshActiveList();updateCtrlSum();});
+document.getElementById("ftag").addEventListener("change",e=>{const t=e.target.value;const f=document.getElementById("ffacet").value||null;FILTER={facet:f,tag:t||null};refreshActiveList();updateCtrlSum();});
+function refreshActiveList(){if(document.getElementById("incidents").classList.contains("on"))renderIncidents();else renderStories();}
 (function(){const el=document.getElementById('ov-trend');if(!el)return;const show=e=>{const r=e.target.closest&&e.target.closest('rect.th');if(!r){trendTip.style.display='none';return;}const b=el.getBoundingClientRect();trendTip.innerHTML=`<b>${fdate(r.getAttribute('data-d'))}</b><br><span style="color:var(--green)">●</span> ${r.getAttribute('data-p')} positive · <span style="color:var(--amber)">●</span> ${r.getAttribute('data-u')} neutral · <span style="color:var(--red)">●</span> ${r.getAttribute('data-g')} negative`;trendTip.style.display='block';let lx=e.clientX-b.left+10;lx=Math.min(lx,b.width-170);trendTip.style.left=Math.max(2,lx)+'px';trendTip.style.top=Math.max(2,e.clientY-b.top-14)+'px';};el.addEventListener('pointermove',show);el.addEventListener('pointerdown',show);el.addEventListener('pointerleave',()=>{trendTip.style.display='none';});})();
 function applyTldr(){const b=document.getElementById("tldr");if(b){b.classList.toggle("on",TLDR);b.textContent=TLDR?"TL;DR ✓":"TL;DR";}document.body.classList.toggle("tldr",TLDR);}
-document.getElementById("tldr").addEventListener("click",()=>{TLDR=!TLDR;try{localStorage.setItem("tldr",TLDR?"1":"0");}catch(e){}applyTldr();if(BOARD)render(BOARD);if(STORIES.length){if(document.getElementById("stories").classList.contains("on"))drawStories();if(document.getElementById("issues").classList.contains("on"))drawTopics();}if(document.getElementById("ov").classList.contains("on")&&CURRENT_TOPIC)openByKind(CURRENT_TOPIC,CUR_KIND);});
+document.getElementById("tldr").addEventListener("click",()=>{TLDR=!TLDR;try{localStorage.setItem("tldr",TLDR?"1":"0");}catch(e){}applyTldr();if(BOARD)render(BOARD);if(STORIES.length&&document.getElementById("stories").classList.contains("on"))drawStories();if(STORIES.length&&document.getElementById("incidents").classList.contains("on"))drawIncidents();if(document.getElementById("ov").classList.contains("on")&&CURRENT_TOPIC)openByKind(CURRENT_TOPIC,CUR_KIND);});
 applyTldr();
-document.addEventListener("click",e=>{const mr=e.target.closest(".row[data-media]");if(mr){openMedia(decodeURIComponent(mr.dataset.media));return;}const sr=e.target.closest(".row[data-story]");if(sr){openDetail(decodeURIComponent(sr.dataset.story),'story');return;}const r=e.target.closest(".row[data-topic]");if(r)openDetail(decodeURIComponent(r.dataset.topic),'topic');});
+document.addEventListener("click",e=>{
+  if(e.target.closest(".clearfilter")){clearFacetFilter();return;}
+  const gc=e.target.closest("[data-gapcard]");if(gc){openDetail(decodeURIComponent(gc.dataset.gapcard),'story');return;}
+  const fr=e.target.closest(".row[data-facet]");if(fr){applyFacetFilter(fr.dataset.facet,decodeURIComponent(fr.dataset.tag));return;}
+  const mr=e.target.closest(".row[data-media]");if(mr){openMedia(decodeURIComponent(mr.dataset.media));return;}
+  const sr=e.target.closest(".row[data-story]");if(sr){openDetail(decodeURIComponent(sr.dataset.story),'story');return;}
+  const r=e.target.closest(".row[data-topic]");if(r)openDetail(decodeURIComponent(r.dataset.topic),'topic');});
+document.getElementById("morenews").addEventListener("click",e=>{e.preventDefault();const tabs=document.getElementById("tabs");[...tabs.children].forEach(x=>x.classList.toggle("on",x.dataset.v==='stories'));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id==='stories'));window.scrollTo(0,0);renderStories();});
 document.addEventListener("keydown",e=>{const open=document.getElementById("ov").classList.contains("on");if(e.key==="Escape")closeDetail();else if(open&&e.key==="ArrowLeft")navIssue(-1);else if(open&&e.key==="ArrowRight")navIssue(1);});
 document.getElementById("navPrev").addEventListener("click",()=>navIssue(-1));
 document.getElementById("navNext").addEventListener("click",()=>navIssue(1));
@@ -452,12 +548,12 @@ document.getElementById("shareMenu").addEventListener("click",e=>{const b=e.targ
 document.addEventListener("click",e=>{if(!e.target.closest(".sharewrap"))closeShareMenu();});
 window.addEventListener("hashchange",handleHash);
 let RANGE={from:null,to:null};
-function ymd(d){return d.toISOString().slice(0,10);}
-function loadBoard(){STORIES_KEY=null;const L=document.getElementById("loading");L.style.display="block";L.textContent="Loading…";rpc('get_board',{p_from:RANGE.from,p_to:RANGE.to}).then(render).catch(e=>{L.textContent="Could not load live data: "+e.message+". (Check network / login.)";});if(document.getElementById("stories").classList.contains("on"))renderStories();if(document.getElementById("issues").classList.contains("on"))renderTopics();}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function loadBoard(){STORIES_KEY=null;NEWS_KEY=null;const L=document.getElementById("loading");L.style.display="block";L.textContent="Loading…";rpc('get_board',{p_from:RANGE.from,p_to:RANGE.to}).then(render).catch(e=>{L.textContent="Could not load live data: "+e.message+". (Check network / login.)";});if(document.getElementById("stories").classList.contains("on"))renderStories();if(document.getElementById("incidents").classList.contains("on"))renderIncidents();}
 function setDays(days){const to=new Date();const from=new Date();from.setDate(from.getDate()-(days-1));RANGE={from:ymd(from),to:ymd(to)};loadBoard();}
 document.getElementById("range").addEventListener("click",e=>{const b=e.target.closest("span[data-d]");if(!b)return;const cal=document.getElementById("calbar");
   if(b.dataset.d==='cal'){cal.style.display=cal.style.display==='none'?'flex':'none';return;}
-  [...document.querySelectorAll('#range span[data-d]')].forEach(x=>x.classList.toggle('on',x===b));cal.style.display='none';setDays(+b.dataset.d);if(window.gtag)gtag('event','range',{days:b.dataset.d});});
+  [...document.querySelectorAll('#range span[data-d]')].forEach(x=>x.classList.toggle('on',x===b));cal.style.display='none';setDays(+b.dataset.d);updateCtrlSum();if(window.gtag)gtag('event','range',{days:b.dataset.d});});
 document.getElementById("calApply").addEventListener("click",()=>{const f=document.getElementById("calFrom").value,t=document.getElementById("calTo").value;if(!f||!t)return;RANGE={from:f,to:t};[...document.querySelectorAll('#range span')].forEach(x=>x.classList.remove('on'));loadBoard();if(window.gtag)gtag('event','range',{days:'calendar'});});
 setDays(30);
 handleHash();
