@@ -47,6 +47,14 @@
   .kpi .x.title{font-size:13px;color:var(--ink);font-weight:600;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .kpi .dlt{font-size:11px;font-weight:600;margin-top:6px;line-height:1.3}
   .kpi.tap{cursor:pointer;transition:border-color .12s}.kpi.tap:hover{border-color:var(--accent)}
+  body.tldr .kpi .x,body.tldr .kpi .dlt{display:none}
+  .pgfoot{margin:26px 0 10px;border:none;background:none}
+  .pgfoot>summary{display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;font-weight:600;color:var(--mut);list-style:none;border:1px solid var(--line);border-radius:999px;padding:4px 11px;background:var(--card)}
+  .pgfoot>summary:hover{border-color:var(--accent);color:var(--accent)}
+  .pgfoot>summary::-webkit-details-marker{display:none}
+  .pgfoot>summary::after{content:"▸";color:var(--mut)}.pgfoot[open]>summary::after{content:"▾"}
+  .pgfoot .pgfoot-body{font-size:11px;line-height:1.55;color:var(--mut);margin-top:10px;max-width:760px}
+  .pgfoot .pgfoot-body strong{color:var(--ink);font-weight:600}
   .sbar3{display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--barbg);margin:1px 0 4px}.sbar3 i{display:block;height:100%}
   .sbar3leg{display:flex;gap:9px;font-size:11px;color:var(--mut)}.sbar3leg b{font-weight:700;font-variant-numeric:tabular-nums}
   .kpi.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -204,7 +212,6 @@
     <div class="dsec" style="margin-top:22px">Latest headlines <span class="info" tabindex="0" role="button" aria-label="Headlines help">i<span class="tip">The five most recent media articles. Tap to open the article, or open the News tab for the full feed.</span></span></div>
     <div id="feed"></div>
     <div style="margin-top:12px"><button id="morenews" class="morebtn">View all news →</button></div>
-    <div id="ov-foot" class="meta" style="margin-top:22px;border-top:1px solid var(--barbg);padding-top:10px"></div>
   </section>
   <section id="stories">
     <div id="stories-list"></div></section>
@@ -212,6 +219,16 @@
     <div id="incidents-list"></div></section>
   <section id="sources"><div class="note">Where the corpus came from.</div><table id="src"><thead><tr><th>Source</th><th class="num">Items</th></tr></thead><tbody></tbody></table></section>
   <div class="loading" id="loading">Fetching live board…</div>
+  <details class="pgfoot">
+    <summary>About the dashboard</summary>
+    <div class="pgfoot-body">
+    Reception and sentiment are assessed from <strong>publicly available data only</strong> (news media and public social posts/comments) — not private channels.
+    The official↔public and official↔media “gap” figures are a <strong>qualitative read, not a precise measurement</strong>; sentiment is inferred and should guide attention, not decisions on its own.
+    Figures cover only the selected time range and the issues currently tracked; an issue needs at least two of official / media / public to appear.
+    Data is captured on a <strong>scheduled crawl</strong>, so recent items may not yet appear and a short delay is expected; tap Refresh for the latest stored data.
+    Counts can change as new items are captured, de-duplicated and clustered. Personal identifiers are redacted. This is an internal sensing tool for situational awareness.
+    </div>
+  </details>
 </div>
 <div class="ov" id="ov"><div class="sheet"><div class="close"><div class="sharewrap"><button id="shareBtn">⤴ Share</button><div class="sharemenu" id="shareMenu"></div></div><div class="navgrp"><button id="navPrev" title="Previous (←)" aria-label="Previous">‹</button><span id="navPos" class="navpos"></span><button id="navNext" title="Next (→)" aria-label="Next">›</button><button onclick="closeDetail()" title="Close (Esc)" aria-label="Close">✕</button></div></div><div id="detail"></div></div></div>
 <script>
@@ -639,7 +656,6 @@ function render(B){
     <div class="kpi tap" id="kpiMed"><div class="n" id="kpiMedN">—</div><div class="l">Media gap ${info("Across promoted issues that have BOTH an official line and media coverage: the AVERAGE distance between media tone and the official tone. The w/w line compares to the previous equal-length period.")}</div><div class="x" id="kpiMedX">—</div><div class="dlt" id="kpiMedD"></div></div>
     <div class="kpi tap" id="kpiPS"><div class="n" id="kpiPSN">—</div><div class="l">Public sentiment ${info("The dominant public mood across promoted issues that have public reaction, with the share positive / mixed / negative. The w/w line compares the negative share to the previous equal-length period.")}</div><div class="x" id="kpiPSX">—</div><div class="dlt" id="kpiPSD"></div></div>
     <div class="kpi tap" id="kpiEmg"><div class="n" id="kpiEmgN">—</div><div class="l">Emerging issues ${info("Promoted issues first detected in the last 2 days — newly surfaced and still developing. The w/w line compares to the previous equal-length period. Tap the card for the trend over several periods.")}</div><div class="x" id="kpiEmgX">—</div><div class="dlt" id="kpiEmgD"></div></div>`;
-  document.getElementById("ov-foot") && (document.getElementById("ov-foot").innerHTML=`${m.total} items this window (public ${_pubPct}% · news ${_newsPct}%) · ${m.official} official sources in store · overall tone ${moodWord(m.avg_sent)}`);
   // Issues cards + RAG summary come from the SAME promoted-stories set as the Issues tab (single source of truth)
   rpc('get_stories',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{
     const iss=(rows||[]).filter(s=>s.promoted);
@@ -714,12 +730,17 @@ applyTldr();
 function gotoTab(v){const tabs=document.getElementById("tabs");[...tabs.children].forEach(x=>x.classList.toggle("on",x.dataset.v===v));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===v));window.scrollTo(0,0);if(v==='incidents')renderIncidents();if(v==='stories')renderStories();if(v==='overview')renderCloud();}
 // custom tooltip for trend bars (native title was unreliable)
 const _bartip=document.createElement('div');_bartip.className='bartip';document.body.appendChild(_bartip);
+const _hideTip=()=>_bartip.classList.remove('on');
+function _showTip(tb,cx,cy){_bartip.textContent=tb.getAttribute('data-tip');_bartip.classList.add('on');
+  let x=cx+12,y=cy+14; const w=_bartip.offsetWidth,h=_bartip.offsetHeight;
+  if(x+w>innerWidth-8)x=cx-w-12; if(y+h>innerHeight-8)y=cy-h-14;
+  _bartip.style.left=Math.max(8,x)+'px';_bartip.style.top=Math.max(8,y)+'px';}
 document.addEventListener("pointermove",e=>{const tb=e.target.closest&&e.target.closest('.trendbars .tb[data-tip]');
-  if(!tb){_bartip.classList.remove('on');return;}
-  _bartip.textContent=tb.getAttribute('data-tip');_bartip.classList.add('on');
-  let x=e.clientX+12,y=e.clientY+14; const w=_bartip.offsetWidth,h=_bartip.offsetHeight;
-  if(x+w>innerWidth-8)x=e.clientX-w-12; if(y+h>innerHeight-8)y=e.clientY-h-14;
-  _bartip.style.left=Math.max(8,x)+'px';_bartip.style.top=Math.max(8,y)+'px';});
+  if(!tb){_hideTip();return;} _showTip(tb,e.clientX,e.clientY);});
+// touch: show on tap, dismiss on scroll / tap-elsewhere / tab change
+document.addEventListener("pointerdown",e=>{const tb=e.target.closest&&e.target.closest('.trendbars .tb[data-tip]');
+  if(tb){_showTip(tb,e.clientX,e.clientY);setTimeout(_hideTip,2600);}else _hideTip();},true);
+window.addEventListener("scroll",_hideTip,true);
 document.addEventListener("click",e=>{
   if(e.target.closest(".clearfilter")){clearFacetFilter();return;}
   const kc=e.target.closest(".kpi.tap");if(kc&&CARD_TREND[kc.id]){openCardTrend(kc.id);return;}
