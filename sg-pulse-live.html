@@ -55,10 +55,17 @@
   .trendpanel .th h4{margin:0;font-size:14px}.trendpanel .th .cl{cursor:pointer;color:var(--mut);font-size:18px;line-height:1;border:none;background:none}
   .trendbars{display:flex;align-items:flex-end;gap:8px;height:96px;margin:14px 0 4px}
   .trendbars .tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px;min-width:0}
-  .trendbars .tb .bar{width:60%;max-width:34px;border-radius:3px 3px 0 0;background:var(--accent);transition:height .2s}
+  .trendbars .tb .bar{width:32px;max-width:60%;border-radius:3px 3px 0 0;background:var(--accent);transition:height .2s}
+  .trendbars .tb .bar.stack{overflow:hidden}.trendbars .tb .bar.stack i:first-child{border-radius:0}.trendbars .tb .bar.stack i:last-child{border-radius:3px 3px 0 0}
   .trendbars .tb .bv{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
   .trendbars .tb .bl{font-size:9.5px;color:var(--mut);text-align:center;line-height:1.15}
   .trendbars .tb.cur .bl{color:var(--ink);font-weight:700}
+  .trendbars .tb{cursor:default}.trendbars .tb:hover .bar{filter:brightness(1.15);outline:2px solid var(--accent);outline-offset:1px;border-radius:3px}
+  .trendbars .tb:hover .bv{color:var(--accent)}
+  .bartip{position:fixed;z-index:90;background:var(--ink);color:var(--bg);font-size:11.5px;font-weight:600;padding:7px 10px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:none;max-width:230px;line-height:1.35;display:none}
+  .bartip.on{display:block}
+  .morebtn{width:100%;border:1px solid var(--line);background:var(--card);color:var(--accent);font:600 13px/1 inherit;padding:11px;border-radius:10px;cursor:pointer;transition:border-color .12s,background .12s}
+  .morebtn:hover{border-color:var(--accent);background:var(--panel)}
   .trendpanel .tnote{font-size:11.5px;color:var(--mut);margin-top:4px}
   .row{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:8px 0}
   .row[data-topic]{cursor:pointer}.row[data-topic]:hover{border-color:var(--accent)}
@@ -67,10 +74,12 @@
   .row .t{font-weight:600}.row .c{font-size:11.5px;color:var(--mut);margin-top:1px}.meta{font-size:11.5px;color:var(--mut);margin-top:5px}
   .sev{font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;margin-left:auto;white-space:nowrap}
   .chev{color:var(--mut);font-size:12px;align-self:center;margin-left:6px}
-  body.tldr .row{align-items:center;padding:9px 14px}
-  body.tldr .row .dot{margin-top:0}
-  body.tldr .row .t{min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
-  body.tldr .row .meta{flex:0 0 auto;white-space:nowrap}
+  body.tldr .row.tldrrow{align-items:flex-start;padding:11px 14px;gap:10px}
+  body.tldr .row.tldrrow .dot{margin-top:5px}
+  .tldrbody{flex:1;min-width:0}
+  .tldrtop{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap}
+  .tldrtop .t{font-weight:600;line-height:1.3}
+  body.tldr .row.tldrrow .chev{align-self:center}
   .dsec{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 6px;color:var(--accent)}
   .note{font-size:12px;color:var(--mut);background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin:10px 0}
   .leg{display:flex;gap:14px;font-size:12px;color:var(--mut);margin:6px 0}.leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
@@ -189,15 +198,12 @@
     </select></div>
     <button id="resetfilt" class="tldrbtn" style="display:none">Reset filters</button>
   </div>
-  <section id="overview" class="on"><div class="kpis" id="kpis"></div><div id="ov-trendpanel" hidden></div><div id="ov-gap"></div><div id="ov-summary"></div>
-    <div class="dsec" style="margin-top:18px">Sentiment over time <span class="info" tabindex="0" role="button" aria-label="Chart help">i<span class="tip">Daily counts of items stacked by sentiment — green positive, amber neutral, red negative. Hover or tap a bar for that day's breakdown.</span></span></div>
-    <div class="leg"><span><i style="background:var(--green)"></i>positive</span><span><i style="background:var(--amber)"></i>neutral</span><span><i style="background:var(--red)"></i>negative</span></div>
-    <div id="ov-trend"></div>
+  <section id="overview" class="on"><div class="kpis" id="kpis"></div><div id="ov-trendpanel" hidden></div>
     <div class="dsec" style="margin-top:22px">Public themes <span class="info" tabindex="0" role="button" aria-label="Word cloud help">i<span class="tip">Most-discussed themes in public posts across all tracked issues. Word size = how much that issue is discussed; colour = sentiment (red negative, amber mixed, green positive).</span></span></div>
     <div id="wordcloud"></div>
     <div class="dsec" style="margin-top:22px">Latest headlines <span class="info" tabindex="0" role="button" aria-label="Headlines help">i<span class="tip">The five most recent media articles. Tap to open the article, or open the News tab for the full feed.</span></span></div>
     <div id="feed"></div>
-    <div style="margin-top:8px"><a href="#" id="morenews" class="lnk">More news →</a></div>
+    <div style="margin-top:12px"><button id="morenews" class="morebtn">View all news →</button></div>
     <div id="ov-foot" class="meta" style="margin-top:22px;border-top:1px solid var(--barbg);padding-top:10px"></div>
   </section>
   <section id="stories">
@@ -307,7 +313,7 @@ function storyRow(s,kind){
   const tagHtml=[...(s.domains||[]),...(s.themes||[])].slice(0,5).map(x=>`<span class="kw">${x}</span>`).join(' ');
   const sc=s.status==='active'?'var(--accent)':s.status==='emerging'?'var(--amber)':'var(--mut)';
   const stat=(kind!=='news'&&s.status)?`<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;border:1px solid ${sc};color:${sc}">${s.status}</span>`:'';
-  if(TLDR)return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><span class="t" style="flex:1">${s.title}</span>${stat}<span class="meta" style="margin:0">${sidesHTML(s,true)}</span><span class="chev">›</span></div>`;
+  if(TLDR)return `<div class="row tldrrow" ${da}><span class="dot d-${s.rag}"></span><div class="tldrbody"><div class="tldrtop"><span class="t">${s.title}</span>${stat}</div><span class="meta" style="margin:4px 0 0">${sidesHTML(s,true)}</span></div><span class="chev">›</span></div>`;
   const cta=kind==='news'?'Coverage ›':'Details ›';
   return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="t">${s.title}</span>${stat}</div><div class="c" style="display:flex;flex-wrap:wrap;gap:4px;margin:3px 0">${tagHtml||'—'}</div><div class="meta">${sidesHTML(s,false)} · last ${s.last}</div></div><span class="chev">${cta}</span></div>`;
 }
@@ -327,7 +333,7 @@ const STORY_SORTS={
 function sortedStories(){return [...STORIES].sort(STORY_SORTS[STORY_SORT]||STORY_SORTS.recent).map(s=>s.id);}
 let LENS='domain', FILTER={facet:null,tag:null}, NEWS=[], NEWS_KEY=null;
 function ragDotOnly(sc){const v=num(sc);const c=v<-0.1?'var(--red)':v>0.1?'var(--green)':'var(--amber)';return `<span style="color:${c}" title="${v<-0.1?'negative':v>0.1?'positive':'neutral'}">●</span>`;}
-function articleRow(a){return `<div class="feedrow"><a href="${a.u}" target="_blank" rel="noopener">${a.t} ↗</a><div class="fm"><span style="color:var(--ink);font-weight:600">${a.d}</span>${a.dom?`<span class="fchip">${a.dom}</span>`:''}${TLDR?ragDotOnly(a.sc):ragDot(a.sc)}</div></div>`;}
+function articleRow(a){return `<div class="feedrow"><a href="${a.u}" target="_blank" rel="noopener">${a.t} ↗</a><div class="fm"><span style="color:var(--ink);font-weight:600">${a.d}</span>${(!TLDR&&a.dom)?`<span class="fchip">${a.dom}</span>`:''}${TLDR?ragDotOnly(a.sc):ragDot(a.sc)}</div></div>`;}
 // News sorts. NEWS arrives newest-first from get_news, so 'newest' keeps order, 'oldest' reverses.
 let NEWS_SORT='newest';
 const NEWS_SORTS={
@@ -563,13 +569,14 @@ function sentGauge(v){const p=pctX(num(v));return `<div style="position:relative
 function issueMetrics(ist){const GAP=0.3,gapOf=(a,b)=>Math.round(Math.abs(num(a)-num(b))*100)/100,avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length*100)/100:null;
   const pB=ist.filter(i=>i.official_n>0&&i.public_n>0&&i.pub_sent!=null&&i.off_sent!=null),pG=pB.map(i=>gapOf(i.off_sent,i.pub_sent));
   const mB=ist.filter(i=>i.official_n>0&&i.media_n>0&&i.med_sent!=null&&i.off_sent!=null),mG=mB.map(i=>gapOf(i.off_sent,i.med_sent));
-  const pI=ist.filter(i=>i.public_n>0&&i.pub_sent!=null);let neg=0;pI.forEach(i=>{if(num(i.pub_sent)<=-0.15)neg++;});
-  return {pubAvg:avg(pG),medAvg:avg(mG),negPct:pI.length?Math.round(neg/pI.length*100):null,emg:ist.filter(i=>i.status==='emerging').length};}
+  const pI=ist.filter(i=>i.public_n>0&&i.pub_sent!=null);let pos=0,mix=0,neg=0;pI.forEach(i=>{const v=num(i.pub_sent);if(v<=-0.15)neg++;else if(v>=0.15)pos++;else mix++;});
+  return {pubAvg:avg(pG),medAvg:avg(mG),negPct:pI.length?Math.round(neg/pI.length*100):null,
+          psPos:pos,psMix:mix,psNeg:neg,psN:pI.length,emg:ist.filter(i=>i.status==='emerging').length};}
 // Per-card trend config: which metric, label, unit, formatter, lower-is-better
 const CARD_TREND={
   kpiPub:{title:'Public gap over time',key:'pubAvg',unit:'',fmt:v=>v.toFixed(2),goodDown:true,note:'Average official↔public tone gap. Lower = message landing. Each bar is one period.'},
   kpiMed:{title:'Media gap over time',key:'medAvg',unit:'',fmt:v=>v.toFixed(2),goodDown:true,note:'Average official↔media tone gap. Lower = aligned coverage.'},
-  kpiPS:{title:'Negative public share over time',key:'negPct',unit:'%',fmt:v=>v+'%',goodDown:true,note:'Share of issues whose public reaction is negative. Lower = better.'},
+  kpiPS:{title:'Public sentiment over time',stacked:true,note:'Each bar = issues with public reaction that period, split positive / mixed / negative. Bar height = number of issues.'},
   kpiEmg:{title:'Emerging issues over time',key:'emg',unit:'',fmt:v=>String(v),goodDown:true,note:'Newly-detected issues per period.'}};
 const TREND_PERIODS=7;
 function fmtRange(f,t){const o={day:'2-digit',month:'short'};const a=new Date(f).toLocaleDateString('en-SG',o),b=new Date(t).toLocaleDateString('en-SG',o);return a===b?a:a+'–'+b;}
@@ -589,18 +596,35 @@ function openCardTrend(cardId){
   wins.reverse();
   Promise.all(wins.map(w=>rpc('get_stories',{p_from:w.from,p_to:w.to}).then(r=>issueMetrics((r||[]).filter(s=>s.promoted))).catch(()=>null)))
    .then(mets=>{ if(TREND_OPEN!==cardId)return;
-     const vals=mets.map(m=>m?m[def.key]:null);
-     const valid=vals.filter(v=>v!=null); const max=valid.length?Math.max(...valid, def.unit==='%'?1:0.01):1;
-     const bars=vals.map((v,i)=>{const cur=i===vals.length-1;const hPct=v==null?0:Math.max(4,Math.round(v/max*100));
-       const lbl=fmtRange(wins[i].from,wins[i].to);
-       const col=cur?'var(--accent)':'var(--barbg)';
-       return `<div class="tb ${cur?'cur':''}"><div class="bv">${v==null?'—':def.fmt(v)}</div><div class="bar" style="height:${hPct}%;background:${cur?'var(--accent)':'var(--neu)'}"></div><div class="bl">${lbl}</div></div>`;}).join('');
+     let bars,validN;
+     // delta vs the immediately-preceding period, as a hover title
+     const deltaTitle=(cur,prev,unit)=>{ if(cur==null)return 'No data this period';
+       if(prev==null)return 'No prior period to compare';
+       const d=Math.round((cur-prev)*100)/100; if(Math.abs(d)<(unit==='%'?1:0.01))return 'No change vs previous period';
+       const av=unit==='%'?`${d>0?'+':'−'}${Math.abs(d)} pts`:`${d>0?'+':'−'}${Math.abs(d).toFixed(2)}`;
+       const pc=prev!==0?` (${d>0?'+':'−'}${Math.round(Math.abs(d)/Math.abs(prev)*100)}%)`:'';
+       return `${d>0?'▲':'▼'} ${av}${pc} vs previous period`; };
+     if(def.stacked){
+       const counts=mets.map(m=>m?m.psN:null); const max=Math.max(1,...counts.filter(v=>v!=null));
+       validN=counts.filter(v=>v!=null&&v>0).length;
+       bars=mets.map((m,i)=>{const cur=i===mets.length-1;const lbl=fmtRange(wins[i].from,wins[i].to);
+         const prev=i>0&&mets[i-1]?mets[i-1].psNeg:null; const tt=m?`Pos ${m.psPos} · Mixed ${m.psMix} · Neg ${m.psNeg} — ${deltaTitle(m.psNeg,prev,'')} (negative)`:'No data this period';
+         if(!m||!m.psN)return `<div class="tb ${cur?'cur':''}" data-tip="${tt}"><div class="bv">—</div><div class="bar" style="height:0"></div><div class="bl">${lbl}</div></div>`;
+         const hPct=Math.max(6,Math.round(m.psN/max*100));const seg=(n,c)=>n?`<i style="height:${n/m.psN*100}%;background:${c};display:block"></i>`:'';
+         return `<div class="tb ${cur?'cur':''}" data-tip="${tt}"><div class="bv">${m.psN}</div><div class="bar stack" style="height:${hPct}%;background:none;display:flex;flex-direction:column-reverse">${seg(m.psNeg,'var(--red)')}${seg(m.psMix,'var(--amber)')}${seg(m.psPos,'var(--green)')}</div><div class="bl">${lbl}</div></div>`;}).join('');
+     } else {
+       const vals=mets.map(m=>m?m[def.key]:null);
+       const valid=vals.filter(v=>v!=null); validN=valid.length; const max=valid.length?Math.max(...valid, def.unit==='%'?1:0.01):1;
+       bars=vals.map((v,i)=>{const cur=i===vals.length-1;const hPct=v==null?0:Math.max(4,Math.round(v/max*100));const lbl=fmtRange(wins[i].from,wins[i].to);
+         const tt=v==null?'No data this period':`${def.fmt(v)} — ${deltaTitle(v,(i>0?vals[i-1]:null),def.unit)}`;
+         return `<div class="tb ${cur?'cur':''}" data-tip="${tt}"><div class="bv">${v==null?'—':def.fmt(v)}</div><div class="bar" style="height:${hPct}%;background:${cur?'var(--ink)':'var(--neu)'}"></div><div class="bl">${lbl}</div></div>`;}).join('');
+     }
      const panel2=document.getElementById("ov-trendpanel");if(!panel2)return;
      panel2.querySelector('.trendbars').innerHTML=bars;
-     panel2.querySelector('.trendpanel').insertAdjacentHTML('beforeend',`<div class="tnote">${def.note} ${valid.length<2?'· not enough history yet for a trend':''}</div>`);
+     panel2.querySelector('.trendpanel').insertAdjacentHTML('beforeend',`<div class="tnote">${def.note}${validN<2?' · not enough history yet for a trend':''}</div>`);
    });
 }
-function skelBars(n){let s='';for(let i=0;i<n;i++){const h=20+((i*23)%60);s+=`<div class="tb"><div class="bv">&nbsp;</div><div class="sk bar" style="height:${h}%"></div><div class="bl">&nbsp;</div></div>`;}return s;}
+function skelBars(n){let s='';for(let i=0;i<n;i++){const h=20+((i*23)%60);s+=`<div class="tb"><div class="bv">&nbsp;</div><div class="sk bar" style="height:${h}%;background:var(--barbg)"></div><div class="bl">&nbsp;</div></div>`;}return s;}
 function render(B){
   BOARD=B;const m=B.meta;
   document.getElementById("loading").style.display="none";
@@ -667,18 +691,7 @@ function render(B){
       set('kpiPSD',dBadge(M.negPct,P.negPct,'%',true));
       set('kpiEmgD',dBadge(M.emg,P.emg,'',true));
     }).catch(()=>{});
-    // RAG distribution bar (single source for the red/amber/green split)
-    const seg=(n,c)=>n?`<span style="width:${n/tot*100}%;background:${c}"></span>`:'';
-    const el=document.getElementById("ov-summary");if(!el)return;
-    el.innerHTML=`<div style="display:flex;height:9px;border-radius:4px;overflow:hidden;background:var(--barbg);margin-top:2px">${seg(red,'var(--red)')}${seg(amb,'var(--amber)')}${seg(grn,'var(--green)')}${seg(gry,'var(--mut)')}</div><div class="meta" style="margin-top:5px">${red} red · ${amb} amber · ${grn} green${gry?` · ${gry} grey`:''} · ${iss.length} issue${iss.length===1?'':'s'} on the board</div>`;
   }).catch(()=>{});
-  rpc('get_gap_summary',{p_from:RANGE.from,p_to:RANGE.to}).then(gs=>{const el=document.getElementById("ov-gap");if(!el)return;
-    if(!gs||!gs.total){el.innerHTML=`<div class="gapcard" style="cursor:default;border-left-color:var(--mut)"><div class="dsec" style="margin-top:0">Official vs public gap ${info("How tracked issues that have both an official line and public reaction split between divergence (public differs from the official tone by more than 0.3) and aligned. The official tone is the valence of the message itself — a warning or enforcement action reads negative by design, so official-negative with public-negative counts as aligned.")}</div><div class="meta">No tracked issue with both an official line and public reaction in this window yet.</div></div>`;return;}
-    const top=gs.top||{};
-    // callout carries ONLY the widest-gap detail (the count lives in the KPI card — no duplication)
-    el.innerHTML=top.title?`<div class="gapcard" ${top.id?`data-gapcard="${encodeURIComponent(top.id)}"`:''}><div class="meta" style="margin-bottom:2px">Widest gap to watch</div><div style="font-size:14px;font-weight:600">${top.title}</div><div class="meta" style="margin-top:3px">public runs ${top.dir} than the official line · ${top.verdict} ›</div></div>`:'';
-  }).catch(()=>{});
-  const _tr=document.getElementById("ov-trend");_tr.innerHTML=trendSVG(B.trend);_tr.appendChild(trendTip);
   document.getElementById("wordcloud").innerHTML='<div class="meta">Loading themes…</div>';
   rpc('get_wordcloud',{p_from:RANGE.from,p_to:RANGE.to}).then(renderCloud).catch(()=>{});
   rpc('get_news',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{document.getElementById("feed").innerHTML=(rows||[]).slice(0,5).map(articleRow).join('')||emptyState('No headlines yet','Nothing captured in this window.');}).catch(()=>{});
@@ -696,9 +709,17 @@ document.getElementById("ftag").addEventListener("change",e=>{const t=e.target.v
 function refreshActiveList(){if(document.getElementById("incidents").classList.contains("on"))renderIncidents();else renderStories();}
 (function(){const el=document.getElementById('ov-trend');if(!el)return;const show=e=>{const r=e.target.closest&&e.target.closest('rect.th');if(!r){trendTip.style.display='none';return;}const b=el.getBoundingClientRect();trendTip.innerHTML=`<b>${fdate(r.getAttribute('data-d'))}</b><br><span style="color:var(--green)">●</span> ${r.getAttribute('data-p')} positive · <span style="color:var(--amber)">●</span> ${r.getAttribute('data-u')} neutral · <span style="color:var(--red)">●</span> ${r.getAttribute('data-g')} negative`;trendTip.style.display='block';let lx=e.clientX-b.left+10;lx=Math.min(lx,b.width-170);trendTip.style.left=Math.max(2,lx)+'px';trendTip.style.top=Math.max(2,e.clientY-b.top-14)+'px';};el.addEventListener('pointermove',show);el.addEventListener('pointerdown',show);el.addEventListener('pointerleave',()=>{trendTip.style.display='none';});})();
 function applyTldr(){const b=document.getElementById("tldr");if(b){b.classList.toggle("on",TLDR);b.textContent=TLDR?"TL;DR ✓":"TL;DR";}document.body.classList.toggle("tldr",TLDR);}
-document.getElementById("tldr").addEventListener("click",()=>{TLDR=!TLDR;try{localStorage.setItem("tldr",TLDR?"1":"0");}catch(e){}applyTldr();if(BOARD)render(BOARD);if(STORIES.length&&document.getElementById("stories").classList.contains("on"))drawStories();if(STORIES.length&&document.getElementById("incidents").classList.contains("on"))drawIncidents();if(document.getElementById("ov").classList.contains("on")&&CURRENT_TOPIC)openByKind(CURRENT_TOPIC,CUR_KIND);});
+document.getElementById("tldr").addEventListener("click",()=>{TLDR=!TLDR;try{localStorage.setItem("tldr",TLDR?"1":"0");}catch(e){}applyTldr();if(BOARD)render(BOARD);if(NEWS.length&&document.getElementById("stories").classList.contains("on"))drawStories();if(STORIES.length&&document.getElementById("incidents").classList.contains("on"))drawIncidents();if(document.getElementById("ov").classList.contains("on")&&CURRENT_TOPIC)openByKind(CURRENT_TOPIC,CUR_KIND);});
 applyTldr();
 function gotoTab(v){const tabs=document.getElementById("tabs");[...tabs.children].forEach(x=>x.classList.toggle("on",x.dataset.v===v));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===v));window.scrollTo(0,0);if(v==='incidents')renderIncidents();if(v==='stories')renderStories();if(v==='overview')renderCloud();}
+// custom tooltip for trend bars (native title was unreliable)
+const _bartip=document.createElement('div');_bartip.className='bartip';document.body.appendChild(_bartip);
+document.addEventListener("pointermove",e=>{const tb=e.target.closest&&e.target.closest('.trendbars .tb[data-tip]');
+  if(!tb){_bartip.classList.remove('on');return;}
+  _bartip.textContent=tb.getAttribute('data-tip');_bartip.classList.add('on');
+  let x=e.clientX+12,y=e.clientY+14; const w=_bartip.offsetWidth,h=_bartip.offsetHeight;
+  if(x+w>innerWidth-8)x=e.clientX-w-12; if(y+h>innerHeight-8)y=e.clientY-h-14;
+  _bartip.style.left=Math.max(8,x)+'px';_bartip.style.top=Math.max(8,y)+'px';});
 document.addEventListener("click",e=>{
   if(e.target.closest(".clearfilter")){clearFacetFilter();return;}
   const kc=e.target.closest(".kpi.tap");if(kc&&CARD_TREND[kc.id]){openCardTrend(kc.id);return;}
