@@ -283,8 +283,12 @@ function toneCol(x){return x>=0.15?'var(--green)':x<=-0.15?'var(--red)':'var(--a
 function fmtSent(x){const v=num(x);return (v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2);}
 function gapPane(label,off,otherSent,otherN,gp){
   const head=`Official ↔ ${label}`;
-  if(!off) return `<div class="lane gpane empty"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">No official line captured — gap not assessed.</p></div>`;
-  if(!otherN||otherSent==null) return `<div class="lane gpane empty"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">No ${label.toLowerCase()} captured in this window.</p></div>`;
+  if(!off){
+    if(otherN&&otherSent!=null){ const tw=num(otherSent)<=-0.15?'negative':num(otherSent)>=0.15?'positive':'mixed';
+      return `<div class="lane gpane"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">${label} reception: <b>${tw}</b> (avg ${num(otherSent).toFixed(2)}) from <b>${otherN}</b> ${label.toLowerCase()} item${otherN!==1?'s':''}. No official line yet — shown as a standalone signal (external trigger), not a gap.</p></div>`; }
+    return `<div class="lane gpane empty"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">No official line captured — gap not assessed.</p></div>`; }
+  if(otherN&&otherSent==null) return `<div class="lane gpane empty"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">${otherN} ${label.toLowerCase()} item${otherN!==1?'s':''} captured — sentiment scoring pending (updates after the next processing run).</p></div>`;
+  if(!otherN) return `<div class="lane gpane empty"><h5>${head}</h5><p style="font-size:12px;color:var(--mut)">No ${label.toLowerCase()} captured in this window.</p></div>`;
   const ox=pctX(num(off.sent)), tx=pctX(num(otherSent)); const lo=Math.min(ox,tx), w=Math.max(2,Math.abs(ox-tx));
   const dist=Math.abs(num(off.sent)-num(otherSent));
   const oc=toneCol(num(off.sent)), tc=toneCol(num(otherSent));
@@ -458,7 +462,8 @@ async function openDetail(topic,kind){
   const pins=[];if(off&&off.sent!=null)pins.push({t:'Official',x:num(off.sent),c:'var(--accent)'});if(d.media_n>0)pins.push({t:'Media',x:num(d.med_sent),c:'var(--ink)'});if(d.public_n>0)pins.push({t:'Public',x:num(d.pub_sent),c:'var(--mut)'});
   const gapPair=(label,n,cs,insight,kwCp)=>{
     if(!off) return {t:`<b>Official ↔ ${label}:</b> no official line — not assessed`,short:`<b>${label}:</b> no official line`,v:'amber',verdict:'no official line',detail:'No official line captured — gap not assessed.'};
-    if(!n||cs==null) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber',verdict:'no data',detail:`No ${label.toLowerCase()} captured in this window.`};
+    if(n&&cs==null) return {t:`<b>Official ↔ ${label}:</b> ${n} ${label.toLowerCase()} item${n!==1?'s':''} captured — sentiment scoring pending`,short:`<b>${label}:</b> scoring…`,v:'amber',verdict:'scoring pending',detail:`${n} ${label.toLowerCase()} item${n!==1?'s':''} captured; sentiment not yet scored (updates after the next processing run).`};
+    if(!n) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber',verdict:'no data',detail:`No ${label.toLowerCase()} captured in this window.`};
     const g=gapDir(off.sent,cs); const dist=g.absd;
     const verdict=g.adverse?'divergence':g.favourable?'favourable':'aligned'; const vv=g.adverse?'red':g.favourable?'amber':'green';
     const toneW=x=>x<=-0.15?'negative':x>=0.15?'positive':'neutral';
@@ -479,7 +484,7 @@ async function openDetail(topic,kind){
   const newsV=(d.news||[]).map(n=>`<div class="dq" style="font-style:normal">${n.t}<span class="src">${platOf(n.u)||'news media'} · ${n.d} · ${ragDot(n.sc)}${n.u?` · <a class="lnk" href="${n.u}" target="_blank" rel="noopener">read article ↗</a>`:''}</span></div>`).join('');
   const offV=off?`<div class="dq" style="font-style:normal">${off.content||'Official communication'}<span class="src">${off.src||'Official source'} · ${off.date} · ${ragDot(off.sent)}${off.url?` · <a class="lnk" href="${off.url}" target="_blank" rel="noopener">read source ↗</a>`:''}</span></div>`:'';
   const nq=(d.quotes||[]).length+(d.news||[]).length+(off?1:0);
-  const verb=nq?`<details><summary>Sources (${nq})</summary>${offV?`<div class="dsec">Official line</div>${offV}`:''}${pubV?`<div class="dsec">Public posts</div>${pubV}`:''}${newsV?`<div class="dsec">Referenced news</div>${newsV}`:''}</details>`:'';
+  const verb=nq?`<details><summary>Evidence — sample of items behind the counts</summary>${offV?`<div class="dsec">Official line</div>${offV}`:''}${pubV?`<div class="dsec">Public posts (showing ${(d.quotes||[]).length} of ${d.public_n})</div>${pubV}`:''}${newsV?`<div class="dsec">Referenced news (showing ${(d.news||[]).length} of ${d.media_n})</div>${newsV}`:''}</details>`:'';
   document.getElementById("detail").innerHTML=`
     <div class="dsum" style="color:var(--mut);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em">${kind==='story'?(d.status||'Incident'):(EXEC?(d.max_sev>0?sevWord(d.max_sev)+' severity':'Issue'):nameOf(topic)+(d.max_sev>0?` · ⚠ ${Math.round(d.max_sev)}`:''))}</div>
     <div class="dtitle">${title}</div>
