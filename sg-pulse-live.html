@@ -338,7 +338,11 @@ function storyRow(s,kind){
 }
 const STAT_ORD={active:0,emerging:1,quiet:2};
 // gap of a side vs the official tone; null (side or official missing) sorts last
-const sideGap=(s,which)=>{const cs=which==='pub'?s.pub_sent:s.med_sent;if(!s.official_n||s.off_sent==null||cs==null)return -1;return Math.round(Math.abs(num(s.off_sent)-num(cs))*100)/100;};
+// Directional gap. d = official − reception; positive d means reception is MORE NEGATIVE than
+// the official tone = ADVERSE (the concern). Negative d = reception more positive = FAVOURABLE (fine).
+function gapDir(offSent,sideSent){const d=Math.round((num(offSent)-num(sideSent))*100)/100;return {d,absd:Math.abs(d),adverse:d>0.3,favourable:d<-0.3,aligned:Math.abs(d)<=0.3};}
+// sort key: adverse magnitude only (favourable/aligned sort to the bottom)
+const sideGap=(s,which)=>{const cs=which==='pub'?s.pub_sent:s.med_sent;if(!s.official_n||s.off_sent==null||cs==null)return -1;const g=gapDir(s.off_sent,cs);return g.adverse?g.d:-1;};
 const STORY_SORTS={
   recent:(a,b)=>((STAT_ORD[a.status]??9)-(STAT_ORD[b.status]??9))||((b.public_n+b.media_n)-(a.public_n+a.media_n)),
   volume:(a,b)=>(b.public_n+b.media_n)-(a.public_n+a.media_n),
@@ -422,9 +426,9 @@ async function openDetail(topic,kind){
   const gapCard=(label,n,cs)=>{
     if(!off) return mcard(label+' gap','—',ICON.scale,'var(--mut)');
     if(!n||cs==null) return mcard(label+' gap','—',ICON.scale,'var(--mut)');
-    const dist=Math.round(Math.abs(num(off.sent)-num(cs))*100)/100;
-    const col=dist>0.3?'var(--red)':'var(--green)';
-    return mcard(label+' gap',dist.toFixed(2),ICON.scale,col);
+    const g=gapDir(off.sent,cs);
+    const col=g.adverse?'var(--red)':g.favourable?'var(--mut)':'var(--green)';
+    return mcard(label+' gap',g.absd.toFixed(2),ICON.scale,col);
   };
   // public-sentiment card: average public tone as a word, coloured; muted if no scored public items
   const psWord=(d.pub_sent==null||!d.public_n)?'—':(num(d.pub_sent)<=-0.15?'Negative':num(d.pub_sent)>=0.15?'Positive':'Mixed');
@@ -455,7 +459,8 @@ async function openDetail(topic,kind){
   const gapPair=(label,n,cs,insight,kwCp)=>{
     if(!off) return {t:`<b>Official ↔ ${label}:</b> no official line — not assessed`,short:`<b>${label}:</b> no official line`,v:'amber',verdict:'no official line',detail:'No official line captured — gap not assessed.'};
     if(!n||cs==null) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber',verdict:'no data',detail:`No ${label.toLowerCase()} captured in this window.`};
-    const dist=Math.round(Math.abs(num(off.sent)-num(cs))*100)/100; const verdict=dist>0.3?'divergence':'aligned'; const vv=dist>0.3?'red':'green';
+    const g=gapDir(off.sent,cs); const dist=g.absd;
+    const verdict=g.adverse?'divergence':g.favourable?'favourable':'aligned'; const vv=g.adverse?'red':g.favourable?'amber':'green';
     const toneW=x=>x<=-0.15?'negative':x>=0.15?'positive':'neutral';
     const detail=insight?insight:`${label} reaction is ${toneW(num(cs))} (avg ${num(cs).toFixed(2)}) against a ${toneW(num(off.sent))} official line${off.sent!=null?` (${num(off.sent).toFixed(2)})`:''} — from ${n} ${label.toLowerCase()} item${n!==1?'s':''}.`;
     const offK=kwShort(sm.kw_off,3), cpK=kwShort(kwCp,3);
@@ -585,9 +590,11 @@ let LOADED_AT='';
 function setSub(){const el=document.getElementById("sub");if(!el)return;const base=LAST_CAP?('Last updated '+LAST_CAP):(SUB_ITEMS?'Live · '+SUB_ITEMS+' items':'Loading…');el.textContent=base+(LOADED_AT?' · data loaded '+LOADED_AT:'');}
 function sentGauge(v){const p=pctX(num(v));return `<div style="position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--red),var(--amber) 50%,var(--green));margin:7px 0 2px"><span style="position:absolute;left:${p}%;transform:translateX(-50%);top:-2px;width:3px;height:10px;background:var(--ink);border-radius:1px;box-shadow:0 0 0 1.5px var(--card)"></span></div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mut)"><span>−1</span><span>0</span><span>+1</span></div>`;}
 // Module-scope metric extractor (mirrors the inline one in render) for the per-card trend panel.
-function issueMetrics(ist){const GAP=0.3,gapOf=(a,b)=>Math.round(Math.abs(num(a)-num(b))*100)/100,avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length*100)/100:null;
-  const pB=ist.filter(i=>i.official_n>0&&i.public_n>0&&i.pub_sent!=null&&i.off_sent!=null),pG=pB.map(i=>gapOf(i.off_sent,i.pub_sent));
-  const mB=ist.filter(i=>i.official_n>0&&i.media_n>0&&i.med_sent!=null&&i.off_sent!=null),mG=mB.map(i=>gapOf(i.off_sent,i.med_sent));
+function issueMetrics(ist){const GAP=0.3,avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length*100)/100:null;
+  // ADVERSE-only: a gap counts toward the aggregate only when reception is more negative than official
+  const advGaps=(arr,key)=>arr.map(i=>gapDir(i.off_sent,i[key])).filter(g=>g.adverse).map(g=>g.d);
+  const pB=ist.filter(i=>i.official_n>0&&i.public_n>0&&i.pub_sent!=null&&i.off_sent!=null),pG=advGaps(pB,'pub_sent');
+  const mB=ist.filter(i=>i.official_n>0&&i.media_n>0&&i.med_sent!=null&&i.off_sent!=null),mG=advGaps(mB,'med_sent');
   const pI=ist.filter(i=>i.public_n>0&&i.pub_sent!=null);let pos=0,mix=0,neg=0;pI.forEach(i=>{const v=num(i.pub_sent);if(v<=-0.15)neg++;else if(v>=0.15)pos++;else mix++;});
   return {pubAvg:avg(pG),medAvg:avg(mG),negPct:pI.length?Math.round(neg/pI.length*100):null,
           psPos:pos,psMix:mix,psNeg:neg,psN:pI.length,emg:ist.filter(i=>i.status==='emerging').length};}
@@ -666,12 +673,14 @@ function render(B){
           grn=iss.filter(i=>i.rag==='green').length, gry=iss.filter(i=>i.rag==='grey').length;
     const set=(id,html)=>{const e=document.getElementById(id);if(e)e.innerHTML=html;};
     // metrics for one promoted-issue set → comparable scalars for period-over-period
-    const metricsOf=ist=>{const GAP=0.3,gapOf=(a,b)=>Math.round(Math.abs(num(a)-num(b))*100)/100,avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length*100)/100:null;
-      const pB=ist.filter(i=>i.official_n>0&&i.public_n>0&&i.pub_sent!=null&&i.off_sent!=null),pG=pB.map(i=>gapOf(i.off_sent,i.pub_sent));
-      const mB=ist.filter(i=>i.official_n>0&&i.media_n>0&&i.med_sent!=null&&i.off_sent!=null),mG=mB.map(i=>gapOf(i.off_sent,i.med_sent));
+    const metricsOf=ist=>{const avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length*100)/100:null;
+      // ADVERSE-only: gap counts only when reception is more negative than the official tone
+      const advGaps=(arr,key)=>arr.map(i=>gapDir(i.off_sent,i[key])).filter(g=>g.adverse).map(g=>g.d);
+      const pB=ist.filter(i=>i.official_n>0&&i.public_n>0&&i.pub_sent!=null&&i.off_sent!=null),pG=advGaps(pB,'pub_sent');
+      const mB=ist.filter(i=>i.official_n>0&&i.media_n>0&&i.med_sent!=null&&i.off_sent!=null),mG=advGaps(mB,'med_sent');
       const pI=ist.filter(i=>i.public_n>0&&i.pub_sent!=null);let neg=0;pI.forEach(i=>{if(num(i.pub_sent)<=-0.15)neg++;});
-      return {pubAvg:avg(pG),pubN:pB.length,pubDiv:pG.filter(g=>g>GAP).length,
-              medAvg:avg(mG),medN:mB.length,medDiv:mG.filter(g=>g>GAP).length,
+      return {pubAvg:avg(pG),pubN:pB.length,pubDiv:pG.length,
+              medAvg:avg(mG),medN:mB.length,medDiv:mG.length,
               negPct:pI.length?Math.round(neg/pI.length*100):null,emg:ist.filter(i=>i.status==='emerging').length};};
     // period label reflects the actual selected span (prior equal-length window)
     const spanD=(RANGE.from&&RANGE.to)?Math.max(1,Math.round((new Date(RANGE.to)-new Date(RANGE.from))/864e5)+1):30;
@@ -688,18 +697,20 @@ function render(B){
       const pctV=pct==null?'':` (${d>0?'+':'−'}${pct}%)`;
       return `<span class="dlt" style="color:${col}">${ar} ${absV}${pctV} <span class="perlbl" style="color:var(--mut);font-weight:400">${perLbl}</span></span>`;}
     const M=metricsOf(iss);
-    const GAP=0.3;
-    if(M.pubN){set('kpiPubN',`<span style="color:${M.pubAvg>GAP?'var(--red)':'var(--green)'}">${M.pubAvg.toFixed(2)}</span>`);set('kpiPubX',`avg across ${M.pubN} · ${M.pubDiv} diverge`);}
-    else {set('kpiPubN','<span style="color:var(--mut)">—</span>');set('kpiPubX','no official+public issue');}
-    if(M.medN){set('kpiMedN',`<span style="color:${M.medAvg>GAP?'var(--red)':'var(--green)'}">${M.medAvg.toFixed(2)}</span>`);set('kpiMedX',`avg across ${M.medN} · ${M.medDiv} diverge`);}
-    else {set('kpiMedN','<span style="color:var(--mut)">—</span>');set('kpiMedX','no official+media issue');}
+    // gap card: shows the AVERAGE ADVERSE gap (reception more negative than official). No adverse → 0.00 green.
+    const gapFill=(nKey,divKey,avgKey,nEl,xEl,noneTxt)=>{
+      if(!M[nKey]){set(nEl,'<span style="color:var(--mut)">—</span>');set(xEl,noneTxt);return;}
+      if(!M[divKey]){set(nEl,'<span style="color:var(--ink)">0.00</span>');set(xEl,`${M[nKey]} assessed · none adverse`);return;}
+      set(nEl,`<span style="color:var(--ink)">${M[avgKey].toFixed(2)}</span>`);set(xEl,`avg of ${M[divKey]} adverse · ${M[nKey]} assessed`);};
+    gapFill('pubN','pubDiv','pubAvg','kpiPubN','kpiPubX','no official+public issue');
+    gapFill('medN','medDiv','medAvg','kpiMedN','kpiMedX','no official+media issue');
     const pI2=iss.filter(i=>i.public_n>0&&i.pub_sent!=null);const ps={pos:0,mix:0,neg:0};pI2.forEach(i=>{const v=num(i.pub_sent);if(v<=-0.15)ps.neg++;else if(v>=0.15)ps.pos++;else ps.mix++;});
     if(pI2.length){const dom=ps.neg>=ps.pos&&ps.neg>=ps.mix?['Negative','var(--red)']:ps.pos>=ps.mix?['Positive','var(--green)']:['Mixed','var(--amber)'];const pc=n=>Math.round(n/pI2.length*100);
       const w=n=>(n/pI2.length*100).toFixed(1);
       set('kpiPSN',`<span style="color:${dom[1]}">${dom[0]}</span>`);
       set('kpiPSX',`<div class="sbar3">${ps.pos?`<i style="width:${w(ps.pos)}%;background:var(--green)"></i>`:''}${ps.mix?`<i style="width:${w(ps.mix)}%;background:var(--amber)"></i>`:''}${ps.neg?`<i style="width:${w(ps.neg)}%;background:var(--red)"></i>`:''}</div><div class="sbar3leg"><span style="color:var(--green)"><b>${pc(ps.pos)}%</b></span><span style="color:var(--amber)"><b>${pc(ps.mix)}%</b></span><span style="color:var(--red)"><b>${pc(ps.neg)}%</b></span></div>`);}
     else {set('kpiPSN','<span style="color:var(--mut)">—</span>');set('kpiPSX','no public reaction yet');}
-    set('kpiEmgN',`<span style="color:${M.emg?'var(--amber)':'var(--mut)'}">${M.emg}</span>`);set('kpiEmgX',`of ${iss.length} tracked`);
+    set('kpiEmgN',`<span style="color:var(--ink)">${M.emg}</span>`);set('kpiEmgX',`of ${iss.length} tracked`);
     // cards now open an inline trend panel (replaces the jump-to-Issues)
     // period-over-period: fetch prior equal-length window, then fill the delta line on each card
     const pf=new Date(RANGE.from||Date.now());pf.setDate(pf.getDate()-spanD);const pt=new Date(RANGE.from||Date.now());pt.setDate(pt.getDate()-1);
