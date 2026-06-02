@@ -404,13 +404,27 @@ function applyFacetFilter(facet,tag){ FILTER={facet,tag};
   document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id==='stories'));
   window.scrollTo(0,0); renderStories(); }
 function clearFacetFilter(){ FILTER={facet:null,tag:null}; if(document.getElementById("incidents").classList.contains("on"))renderIncidents(); else renderStories(); }
-function sortedList(){return CUR_KIND==='topic'?sortedTopics():sortedStories();}
+let NAV_IDS=null;
+// Snapshot the exact visible list the user opened from, so the detail pager walks the
+// SAME filter+sort the list shows (Issues list = promoted only; board = all topics).
+// NAV_IDS=null means opened from a shared/deep link with no list context -> pager hidden.
+function captureNav(kind){
+  NAV_IDS = kind==='topic'
+    ? (BOARD?[...BOARD.issues].sort(ISSUE_SORTS[CURRENT_SORT]||ISSUE_SORTS.rag).map(i=>i.topic):[])
+    : kind==='story'
+      ? [...STORIES].filter(s=>s.promoted).sort(STORY_SORTS[STORY_SORT]||STORY_SORTS.recent).map(s=>s.id)
+      : null;
+}
 function renderIssues(sortKey){
   CURRENT_SORT=sortKey||CURRENT_SORT;
   lazyList(document.getElementById("issues-list"),[...BOARD.issues].sort(ISSUE_SORTS[CURRENT_SORT]||ISSUE_SORTS.rag),issueRow,8);
 }
-function navIssue(dir){ if(!CURRENT_TOPIC)return; const arr=sortedList(); const idx=arr.indexOf(CURRENT_TOPIC); if(idx<0)return; const ni=idx+dir; if(ni<0||ni>=arr.length)return; openByKind(arr[ni],CUR_KIND); document.getElementById("ov").scrollTo&&document.getElementById("ov").scrollTo(0,0); }
-function updateNav(){ const arr=sortedList(); const idx=arr.indexOf(CURRENT_TOPIC); const p=document.getElementById("navPrev"),n=document.getElementById("navNext"),pos=document.getElementById("navPos"); if(p)p.disabled=(idx<=0); if(n)n.disabled=(idx<0||idx>=arr.length-1); if(pos)pos.textContent=(idx>=0?(idx+1)+' / '+arr.length:''); }
+function navIssue(dir){ if(!CURRENT_TOPIC||!NAV_IDS)return; const idx=NAV_IDS.indexOf(CURRENT_TOPIC); if(idx<0)return; const ni=idx+dir; if(ni<0||ni>=NAV_IDS.length)return; openByKind(NAV_IDS[ni],CUR_KIND); const ov=document.getElementById("ov"); ov&&ov.scrollTo&&ov.scrollTo(0,0); }
+function updateNav(){ const p=document.getElementById("navPrev"),n=document.getElementById("navNext"),pos=document.getElementById("navPos");
+  const arr=NAV_IDS; const idx=arr?arr.indexOf(CURRENT_TOPIC):-1; const show=!!arr&&idx>=0&&arr.length>1; const disp=show?'':'none';
+  if(p){p.style.display=disp;p.disabled=(idx<=0);}
+  if(n){n.style.display=disp;n.disabled=(idx<0||idx>=arr.length-1);}
+  if(pos){pos.style.display=disp;pos.textContent=show?((idx+1)+' / '+arr.length):'';} }
 async function openDetail(topic,kind){
   kind=kind||'topic';
   CURRENT_TOPIC=topic;CUR_KIND=kind;
@@ -531,9 +545,9 @@ function closeShareMenu(){const m=document.getElementById('shareMenu');if(m)m.cl
 function openShareMenu(){const m=document.getElementById('shareMenu');if(!m||!CURRENT_TOPIC)return;const items=[];if(navigator.share)items.push(['Share…','native']);items.push(['Copy link','copy'],['WhatsApp','wa'],['Email','mail']);m.innerHTML=items.map(([l,a])=>`<button data-act="${a}">${l}</button>`).join('');m.classList.add('on');}
 function doShareAct(act){const url=shareUrl(),title=shareTitle();if(act==='native'){if(navigator.share)navigator.share({title,text:title,url}).catch(()=>{});}else if(act==='copy'){(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>toast('Link copied')).catch(()=>window.prompt('Copy this link:',url));}else if(act==='wa'){window.open('https://wa.me/?text='+encodeURIComponent(title+' '+url),'_blank','noopener');}else if(act==='mail'){location.href='mailto:?subject='+encodeURIComponent(title)+'&body='+encodeURIComponent(url);}closeShareMenu();}
 function handleHash(){const nw=getHashNews(),st=getHashStory(),t=getHashIssue(),open=document.getElementById('ov').classList.contains('on');
-  if(nw){if(nw!==CURRENT_TOPIC||CUR_KIND!=='media'||!open)openMedia(nw);}
-  else if(st){if(st!==CURRENT_TOPIC||CUR_KIND!=='story'||!open)openDetail(st,'story');}
-  else if(t){if(t!==CURRENT_TOPIC||CUR_KIND!=='topic'||!open)openDetail(t,'topic');}
+  if(nw){if(nw!==CURRENT_TOPIC||CUR_KIND!=='media'||!open){NAV_IDS=null;openMedia(nw);}}
+  else if(st){if(st!==CURRENT_TOPIC||CUR_KIND!=='story'||!open){NAV_IDS=null;openDetail(st,'story');}}
+  else if(t){if(t!==CURRENT_TOPIC||CUR_KIND!=='topic'||!open){NAV_IDS=null;openDetail(t,'topic');}}
   else if(open)closeDetail();}
 const trendTip=document.createElement('div');trendTip.className='trendtip';
 let LAST_CLOUD=[];
@@ -761,12 +775,12 @@ window.addEventListener("scroll",_hideTip,true);
 document.addEventListener("click",e=>{
   if(e.target.closest(".clearfilter")){clearFacetFilter();return;}
   const kc=e.target.closest(".kpi.tap");if(kc&&CARD_TREND[kc.id]){openCardTrend(kc.id);return;}
-  const goc=e.target.closest("[data-go-story]");if(goc){openDetail(decodeURIComponent(goc.getAttribute('data-go-story')),'story');return;}
-  const gc=e.target.closest("[data-gapcard]");if(gc){openDetail(decodeURIComponent(gc.dataset.gapcard),'story');return;}
+  const goc=e.target.closest("[data-go-story]");if(goc){NAV_IDS=null;openDetail(decodeURIComponent(goc.getAttribute('data-go-story')),'story');return;}
+  const gc=e.target.closest("[data-gapcard]");if(gc){NAV_IDS=null;openDetail(decodeURIComponent(gc.dataset.gapcard),'story');return;}
   const fr=e.target.closest(".row[data-facet]");if(fr){applyFacetFilter(fr.dataset.facet,decodeURIComponent(fr.dataset.tag));return;}
-  const mr=e.target.closest(".row[data-media]");if(mr){openMedia(decodeURIComponent(mr.dataset.media));return;}
-  const sr=e.target.closest(".row[data-story]");if(sr){openDetail(decodeURIComponent(sr.dataset.story),'story');return;}
-  const r=e.target.closest(".row[data-topic]");if(r)openDetail(decodeURIComponent(r.dataset.topic),'topic');});
+  const mr=e.target.closest(".row[data-media]");if(mr){NAV_IDS=null;openMedia(decodeURIComponent(mr.dataset.media));return;}
+  const sr=e.target.closest(".row[data-story]");if(sr){captureNav('story');openDetail(decodeURIComponent(sr.dataset.story),'story');return;}
+  const r=e.target.closest(".row[data-topic]");if(r){captureNav('topic');openDetail(decodeURIComponent(r.dataset.topic),'topic');}});
 document.getElementById("morenews").addEventListener("click",e=>{e.preventDefault();const tabs=document.getElementById("tabs");[...tabs.children].forEach(x=>x.classList.toggle("on",x.dataset.v==='stories'));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id==='stories'));window.scrollTo(0,0);setSortOptions('stories');renderStories();updateCtrlSum();});
 document.addEventListener("keydown",e=>{const open=document.getElementById("ov").classList.contains("on");if(e.key==="Escape")closeDetail();else if(open&&e.key==="ArrowLeft")navIssue(-1);else if(open&&e.key==="ArrowRight")navIssue(1);});
 document.getElementById("navPrev").addEventListener("click",()=>navIssue(-1));
