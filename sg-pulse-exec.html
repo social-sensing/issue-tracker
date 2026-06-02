@@ -584,10 +584,9 @@ function lazyList(container, items, rowFn, batch){
   container._obs=obs;
   if(items.length) obs.observe(sent); else container.innerHTML=emptyState('Nothing in this window','Widen the time range to see more.');
 }
-function loadCapStatus(){ rpc('get_capture_status').then(s=>{ if(s&&s.last_capture){LAST_CAP=s.last_capture; setSub();} }).catch(()=>{});}
-let SUB_ITEMS=0,LAST_CAP='';
-let LOADED_AT='';
-function setSub(){const el=document.getElementById("sub");if(!el)return;const base=LAST_CAP?('Last updated '+LAST_CAP):(SUB_ITEMS?'Live · '+SUB_ITEMS+' items':'Loading…');el.textContent=base+(LOADED_AT?' · data loaded '+LOADED_AT:'');}
+function loadCapStatus(){ rpc('get_capture_status').then(s=>{ if(s){LAST_BATCH=s.last_batch||s.last_capture||''; setSub();} }).catch(()=>{});}
+let SUB_ITEMS=0,LAST_BATCH='';
+function setSub(){const el=document.getElementById("sub");if(!el)return;el.textContent=LAST_BATCH?('Last updated '+LAST_BATCH+' SGT'):(SUB_ITEMS?'Live · '+SUB_ITEMS+' items':'Loading…');}
 function sentGauge(v){const p=pctX(num(v));return `<div style="position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--red),var(--amber) 50%,var(--green));margin:7px 0 2px"><span style="position:absolute;left:${p}%;transform:translateX(-50%);top:-2px;width:3px;height:10px;background:var(--ink);border-radius:1px;box-shadow:0 0 0 1.5px var(--card)"></span></div><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--mut)"><span>−1</span><span>0</span><span>+1</span></div>`;}
 // Module-scope metric extractor (mirrors the inline one in render) for the per-card trend panel.
 function issueMetrics(ist){const GAP=0.3,avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x,0)/a.length*100)/100:null;
@@ -654,7 +653,6 @@ function skelBars(n){let s='';for(let i=0;i<n;i++){const h=20+((i*23)%60);s+=`<d
 function render(B){
   BOARD=B;const m=B.meta;
   document.getElementById("loading").style.display="none";
-  LOADED_AT=new Date().toLocaleTimeString('en-SG',{hour:'2-digit',minute:'2-digit',hour12:false});
   const rb=document.getElementById("refresh");if(rb)rb.classList.remove("spin");
   SUB_ITEMS=m.total; setSub();
   const _pubPct=m.total?Math.round(m.public/m.total*100):0,_newsPct=m.total?Math.round(m.news/m.total*100):0;
