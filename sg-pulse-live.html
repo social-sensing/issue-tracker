@@ -361,6 +361,10 @@ function sortedStories(){return [...STORIES].sort(STORY_SORTS[STORY_SORT]||STORY
 let LENS='domain', FILTER={facet:null,tag:null}, NEWS=[], NEWS_KEY=null;
 function ragDotOnly(sc){const v=num(sc);const c=v<-0.1?'var(--red)':v>0.1?'var(--green)':'var(--amber)';return `<span style="color:${c}" title="${v<-0.1?'negative':v>0.1?'positive':'neutral'}">●</span>`;}
 function articleRow(a){return `<div class="feedrow"><a href="${a.u}" target="_blank" rel="noopener">${a.t} ↗</a><div class="fm"><span style="color:var(--ink);font-weight:600">${a.d}</span>${(!TLDR&&a.dom)?`<span class="fchip">${a.dom}</span>`:''}${TLDR?ragDotOnly(a.sc):ragDot(a.sc)}</div></div>`;}
+// Group news by story (sid): collapse same-event coverage; lead = first in sort order (most recent), others behind a "+N more outlets" inline expander.
+function groupNews(arr){const seen={},units=[];for(const a of arr){const sid=a.sid;if(!sid){units.push({single:a});continue;}if(seen[sid]===undefined){seen[sid]=units.length;units.push({lead:a,others:[]});}else{units[seen[sid]].others.push(a);}}return units;}
+function newsUnitRow(u){if(u.single)return articleRow(u.single);if(!u.others||!u.others.length)return articleRow(u.lead);const n=u.others.length;return `<div class="feedgroup">${articleRow(u.lead)}<div class="moretoggle" onclick="toggleOutlets(this)" style="font-size:12px;color:var(--mut);cursor:pointer;padding:4px 2px 8px;user-select:none">+${n} more outlet${n>1?'s':''} <span class="mtcar">▾</span></div><div class="moresub" style="display:none;border-left:2px solid var(--line);margin-left:2px;padding-left:10px">${u.others.map(articleRow).join('')}</div></div>`;}
+function toggleOutlets(el){const sub=el.nextElementSibling;if(!sub)return;const open=sub.style.display!=='none';sub.style.display=open?'none':'block';const car=el.querySelector('.mtcar');if(car)car.textContent=open?'▾':'▴';}
 // News sorts. NEWS arrives newest-first from get_news, so 'newest' keeps order, 'oldest' reverses.
 let NEWS_SORT='newest';
 const NEWS_SORTS={
@@ -374,7 +378,7 @@ const SORT_OPTS={
 function setSortOptions(tab){const sel=document.getElementById("ssort");if(!sel)return;
   if(tab==='stories'){sel.innerHTML=SORT_OPTS.stories;sel.value=NEWS_SORT;}
   else{sel.innerHTML=SORT_OPTS.incidents;sel.value=STORY_SORT;}}
-function drawStories(){let arr=(NEWS_SORTS[NEWS_SORT]||NEWS_SORTS.newest)([...NEWS]);lazyList(document.getElementById("stories-list"),arr,articleRow,12);}
+function drawStories(){let arr=(NEWS_SORTS[NEWS_SORT]||NEWS_SORTS.newest)([...NEWS]);lazyList(document.getElementById("stories-list"),groupNews(arr),newsUnitRow,12);}
 function storiesKey(){return RANGE.from+'|'+RANGE.to+'|'+(FILTER.tag||'');}
 function drawFilterChip(){const r=document.getElementById("resetfilt");if(r)r.style.display=(FILTER&&FILTER.tag)?'':'none';}
 let ISORT='recent';
@@ -498,6 +502,27 @@ async function openDetail(topic,kind){
   const newsV=(d.news||[]).map(n=>`<div class="dq" style="font-style:normal">${n.t}<span class="src">${platOf(n.u)||'news media'} · ${n.d} · ${ragDot(n.sc)}${n.u?` · <a class="lnk" href="${n.u}" target="_blank" rel="noopener">read article ↗</a>`:''}</span></div>`).join('');
   const offV=off?`<div class="dq" style="font-style:normal">${off.content||'Official communication'}<span class="src">${off.src||'Official source'} · ${off.date} · ${ragDot(off.sent)}${off.url?` · <a class="lnk" href="${off.url}" target="_blank" rel="noopener">read source ↗</a>`:''}</span></div>`:'';
   const nq=(d.quotes||[]).length+(d.news||[]).length+(off?1:0);
+  // AMEC panel — reach + keyword congruence + tone from stored data; comprehension/credibility/target from stories.amec_med/pub (summarize-stories v10).
+  const amWords=s=>kwList(s).join(' ').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').split(/\s+/).filter(w=>w.length>3);
+  const amCong=(a,b)=>{const A=new Set(amWords(a)),B=new Set(amWords(b));if(!A.size||!B.size)return null;let h=0;A.forEach(w=>{if(B.has(w))h++;});return Math.round(100*h/A.size);};
+  const amCell=(cp,n)=>{if(!n)return '—';const c=amCong(sm.kw_off,cp);return c==null?'—':c+'%';};
+  const amTone=(cs,n,gp)=>(off&&n)?`${moodWord(off.sent)}→${moodWord(cs)} <span style="color:var(--mut)">(${gp.verdict})</span>`:'—';
+  const amTd='style="padding:4px 10px;text-align:center"';
+  const AM=d.amec||{}; const aMed=AM.med||null, aPub=AM.pub||null;
+  const amScore=(a,k)=>(a&&a[k]!=null)?a[k]+'%':'<span style="color:var(--mut)">pending</span>';
+  const amCred=a=>(a&&a.credibility!=null)?a.credibility+'%'+(a.stance?` <span style="color:var(--mut)">· ${a.stance}</span>`:''):'<span style="color:var(--mut)">pending</span>';
+  const amTgt=a=>(a&&a.target)?` <span style="color:var(--mut)">· at ${a.target}</span>`:'';
+  const amec=(d.media_n>0||d.public_n>0)?`<details style="margin:10px 0 0;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card)"><summary style="cursor:pointer;font-weight:700">AMEC — message transfer <span style="color:var(--mut);font-weight:400;font-size:11px">· preview</span></summary>
+  <table style="border-collapse:collapse;font-size:12px;margin:8px 0;width:100%">
+  <tr style="color:var(--mut);font-size:11px"><td style="padding:4px 10px"></td><td ${amTd}>Media</td><td ${amTd}>Public</td></tr>
+  <tr><td style="padding:4px 10px">Reach</td><td ${amTd}>${d.media_n||0} items</td><td ${amTd}>${d.public_n||0} items</td></tr>
+  <tr><td style="padding:4px 10px">Frame congruence</td><td ${amTd}>${amCell(sm.kw_med,d.media_n)}</td><td ${amTd}>${amCell(sm.kw_pub,d.public_n)}</td></tr>
+  <tr><td style="padding:4px 10px">Tone vs official</td><td ${amTd}>${amTone(d.med_sent,d.media_n,gMed)}${amTgt(aMed)}</td><td ${amTd}>${amTone(d.pub_sent,d.public_n,gPub)}${amTgt(aPub)}</td></tr>
+  <tr><td style="padding:4px 10px">Comprehension</td><td ${amTd}>${amScore(aMed,'comprehension')}</td><td ${amTd}>${amScore(aPub,'comprehension')}</td></tr>
+  <tr><td style="padding:4px 10px">Credibility</td><td ${amTd}>${amCred(aMed)}</td><td ${amTd}>${amCred(aPub)}</td></tr>
+  </table>
+  <div style="font-size:10.5px;color:var(--mut);line-height:1.5">Reach and tone from stored data; frame congruence is keyword overlap (rough proxy). Comprehension, credibility and sentiment target are model-judged against the official line — qualitative reads, not precise measures. "pending" = no official line yet (external-trigger story).<br>Frames — <b>Official:</b> ${kwShort(sm.kw_off,4)||'—'} · <b>Media:</b> ${kwShort(sm.kw_med,4)||'—'} · <b>Public:</b> ${kwShort(sm.kw_pub,4)||'—'}</div>
+  </details>`:'';
   const verb=nq?`<details><summary>Sources</summary>${offV?`<div class="dsec">Official line</div>${offV}`:''}${pubV?`<div class="dsec">Public posts — representative</div>${pubV}`:''}${newsV?`<div class="dsec">Referenced news — representative</div>${newsV}`:''}</details>`:'';
   document.getElementById("detail").innerHTML=`
     <div class="dsum" style="color:var(--mut);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em">${kind==='story'?(d.status||'Incident'):(EXEC?(d.max_sev>0?sevWord(d.max_sev)+' severity':'Issue'):nameOf(topic)+(d.max_sev>0?` · ⚠ ${Math.round(d.max_sev)}`:''))}</div>
@@ -510,6 +535,7 @@ async function openDetail(topic,kind){
     ${off?`<div class="dsec">The gap ${info("Each dot is the tone of what that side actually said, on a negative→positive scale. The Official dot reflects the tone of the official message itself — a warning, advisory or enforcement action sits on the negative side because the message is cautionary, not a mark against the issuing body. 'Divergence' means a side differs from the official tone by more than 0.3; 'aligned' means they are close. So an official warning that the public also takes negatively is aligned — the public shares the concern and the message landed. The gap to watch is the official tone positive but the public negative, or the reverse. Sentiment is a qualitative read, not a precise measure.")}</div>
     <div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div><div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}
     ${verb}
+    ${amec}
     <div class="meta" style="margin-top:16px;border-top:1px solid var(--barbg);padding-top:8px">${kind==='story'&&d.trig?'Trigger '+d.trig+(facetLine(d)?' · ':''):''}${facetLine(d)?'Facets — '+facetLine(d):''}</div>`;
 }
 function closeDetail(){document.getElementById("ov").classList.remove("on");closeShareMenu();if(getHashIssue()||getHashStory()||getHashNews())history.replaceState(null,'',location.pathname+location.search);}
@@ -740,7 +766,7 @@ function render(B){
   }).catch(()=>{});
   document.getElementById("wordcloud").innerHTML='<div class="meta">Loading themes…</div>';
   rpc('get_wordcloud',{p_from:RANGE.from,p_to:RANGE.to}).then(renderCloud).catch(()=>{});
-  rpc('get_news',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{document.getElementById("feed").innerHTML=(rows||[]).slice(0,5).map(articleRow).join('')||emptyState('No headlines yet','Nothing captured in this window.');}).catch(()=>{});
+  rpc('get_news',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{document.getElementById("feed").innerHTML=groupNews(rows||[]).slice(0,5).map(newsUnitRow).join('')||emptyState('No headlines yet','Nothing captured in this window.');}).catch(()=>{});
   document.querySelector("#src tbody").innerHTML=(B.sources||[]).map(s=>`<tr><td>${s.s}</td><td class="num">${s.n}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="num"><strong>${m.total}</strong></td></tr>`;
   loadCapStatus();updateCtrlSum();
 }
