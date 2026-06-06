@@ -647,7 +647,7 @@ const CARD_TREND={
   kpiPub:{title:'Public gap over time',key:'pubAvg',unit:'',fmt:v=>v.toFixed(2),goodDown:true,note:'Average official↔public tone gap. Lower = message landing. Each bar is one period.'},
   kpiMed:{title:'Media gap over time',key:'medAvg',unit:'',fmt:v=>v.toFixed(2),goodDown:true,note:'Average official↔media tone gap. Lower = aligned coverage.'},
   kpiPS:{title:'Public sentiment over time',stacked:true,note:'Each bar = issues with public reaction that period, split positive / mixed / negative. Bar height = number of issues.'},
-  kpiEmg:{title:'Emerging issues over time',key:'emg',unit:'',fmt:v=>String(v),goodDown:true,note:'Newly-detected issues per period.'}};
+  kpiEmg:{title:'Issue status — now',snapshot:true,note:'Promoted issues by current status. Emerging = detected in the last 2 days; Active = new items in the past week; Quiet = no new items for 7+ days.'}};
 const TREND_PERIODS=7;
 function fmtRange(f,t){const o={day:'2-digit',month:'short'};const a=new Date(f).toLocaleDateString('en-SG',o),b=new Date(t).toLocaleDateString('en-SG',o);return a===b?a:a+'–'+b;}
 let TREND_OPEN=null;
@@ -657,6 +657,7 @@ function openCardTrend(cardId){
   document.querySelectorAll('.kpi').forEach(c=>c.classList.toggle('sel',c.id===cardId));
   if(TREND_OPEN===cardId){panel.hidden=true;TREND_OPEN=null;document.getElementById(cardId)?.classList.remove('sel');return;}
   TREND_OPEN=cardId;
+  if(def.snapshot){openIssueSnapshot(panel,def,cardId);return;}
   const spanD=(RANGE.from&&RANGE.to)?Math.max(1,Math.round((new Date(RANGE.to)-new Date(RANGE.from))/864e5)+1):7;
   panel.hidden=false;panel.innerHTML=`<div class="trendpanel"><div class="th"><h4>${def.title}</h4><button class="cl" aria-label="Close">✕</button></div><div class="meta">${TREND_PERIODS} periods of ${spanD}d each</div><div class="trendbars">${skelBars(TREND_PERIODS)}</div></div>`;
   panel.querySelector('.cl').addEventListener('click',()=>{panel.hidden=true;TREND_OPEN=null;document.getElementById(cardId)?.classList.remove('sel');});
@@ -694,6 +695,21 @@ function openCardTrend(cardId){
      panel2.querySelector('.trendpanel').insertAdjacentHTML('beforeend',`<div class="tnote">${def.note}${validN<2?' · not enough history yet for a trend':''}</div>`);
    });
 }
+// Snapshot variant of the tap panel: current Emerging / Active / Quiet counts (replaces the volatile over-time histogram for the Live-issues card).
+function openIssueSnapshot(panel,def,cardId){
+  panel.hidden=false;
+  panel.innerHTML=`<div class="trendpanel"><div class="th"><h4>${def.title}</h4><button class="cl" aria-label="Close">✕</button></div><div class="trendbars">${skelBars(3)}</div></div>`;
+  panel.querySelector('.cl').addEventListener('click',()=>{panel.hidden=true;TREND_OPEN=null;document.getElementById(cardId)?.classList.remove('sel');});
+  rpc('get_stories',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{ if(TREND_OPEN!==cardId)return;
+    const iss=(rows||[]).filter(s=>s.promoted);
+    const c={emerging:0,active:0,quiet:0};iss.forEach(i=>{if(c[i.status]!=null)c[i.status]++;});
+    const max=Math.max(1,c.emerging,c.active,c.quiet);
+    const bar=(lbl,n,col)=>`<div class="tb" data-tip="${lbl}: ${n}"><div class="bv">${n}</div><div class="bar" style="height:${Math.max(4,Math.round(n/max*100))}%;background:${col}"></div><div class="bl">${lbl}</div></div>`;
+    const p2=document.getElementById("ov-trendpanel");if(!p2)return;
+    p2.querySelector('.trendbars').innerHTML=bar('Emerging',c.emerging,'var(--amber)')+bar('Active',c.active,'var(--accent)')+bar('Quiet',c.quiet,'var(--mut)');
+    p2.querySelector('.trendpanel').insertAdjacentHTML('beforeend',`<div class="tnote">${def.note} · ${iss.length} tracked</div>`);
+  }).catch(()=>{});
+}
 function skelBars(n){let s='';for(let i=0;i<n;i++){const h=20+((i*23)%60);s+=`<div class="tb"><div class="bv">&nbsp;</div><div class="sk bar" style="height:${h}%;background:var(--barbg)"></div><div class="bl">&nbsp;</div></div>`;}return s;}
 function render(B){
   BOARD=B;const m=B.meta;
@@ -707,7 +723,9 @@ function render(B){
     <div class="kpi tap" id="kpiPub"><div class="n" id="kpiPubN">—</div><div class="l">Public gap ${info("Across promoted issues that have BOTH an official line and public reaction: the AVERAGE distance between public tone and the official tone (0 = perfectly aligned, higher = wider gap). Above 0.3 = the message is not landing. The change line compares this average to the previous equal-length period. Tap the card for the trend over several periods.")}</div><div class="x" id="kpiPubX">—</div><div class="dlt" id="kpiPubD"></div></div>
     <div class="kpi tap" id="kpiMed"><div class="n" id="kpiMedN">—</div><div class="l">Media gap ${info("Across promoted issues that have BOTH an official line and media coverage: the AVERAGE distance between media tone and the official tone. The change line compares to the previous equal-length period.")}</div><div class="x" id="kpiMedX">—</div><div class="dlt" id="kpiMedD"></div></div>
     <div class="kpi tap" id="kpiPS"><div class="n" id="kpiPSN">—</div><div class="l">Public sentiment ${info("The dominant public mood across promoted issues that have public reaction, with the share positive / mixed / negative. The change line compares the negative share to the previous equal-length period.")}</div><div class="x" id="kpiPSX">—</div><div class="dlt" id="kpiPSD"></div></div>
-    <div class="kpi tap" id="kpiEmg"><div class="n" id="kpiEmgN">—</div><div class="l">Emerging issues ${info("Promoted issues first detected in the last 2 days — newly surfaced and still developing. The change line compares to the previous equal-length period. Tap the card for the trend over several periods.")}</div><div class="x" id="kpiEmgX">—</div><div class="dlt" id="kpiEmgD"></div></div>`;
+    <div class="kpi tap" id="kpiEmg"><div class="n" id="kpiEmgN">—</div><div class="l">Live issues ${info("Promoted issues active in the last 7 days: EMERGING (first detected in the last 2 days) plus ACTIVE (new items within the past week). Quiet issues (no new items for 7+ days) are excluded from the headline. The change line compares the live count to the previous equal-length period. Tap the card for the current Emerging / Active / Quiet split.")}</div><div class="x" id="kpiEmgX">—</div><div class="dlt" id="kpiEmgD"></div></div>`;
+  // If a KPI trend/snapshot panel was open, re-render it for the new range (range change / refresh re-runs render()).
+  if(TREND_OPEN){const _t=TREND_OPEN;TREND_OPEN=null;openCardTrend(_t);}
   // Issues cards + RAG summary come from the SAME promoted-stories set as the Issues tab (single source of truth)
   rpc('get_stories',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{
     const iss=(rows||[]).filter(s=>s.promoted);
@@ -724,7 +742,7 @@ function render(B){
       const pI=ist.filter(i=>i.public_n>0&&i.pub_sent!=null);let neg=0;pI.forEach(i=>{if(num(i.pub_sent)<=-0.15)neg++;});
       return {pubAvg:avg(pG),pubN:pB.length,pubDiv:pG.length,
               medAvg:avg(mG),medN:mB.length,medDiv:mG.length,
-              negPct:pI.length?Math.round(neg/pI.length*100):null,emg:ist.filter(i=>i.status==='emerging').length};};
+              negPct:pI.length?Math.round(neg/pI.length*100):null,emg:ist.filter(i=>i.status==='emerging').length,act:ist.filter(i=>i.status==='active').length,quiet:ist.filter(i=>i.status==='quiet').length,live:ist.filter(i=>i.status==='emerging'||i.status==='active').length};};
     // period label reflects the actual selected span (prior equal-length window)
     const spanD=(RANGE.from&&RANGE.to)?Math.max(1,Math.round((new Date(RANGE.to)-new Date(RANGE.from))/864e5)+1):30;
     const perLbl=`vs prior ${spanD}d`;
@@ -739,6 +757,14 @@ function render(B){
       const pct=prev!==0?Math.round(Math.abs(d)/Math.abs(prev)*100):null;
       const pctV=pct==null?'':` (${d>0?'+':'−'}${pct}%)`;
       return `<span class="dlt" style="color:${col}">${ar} ${absV}${pctV} <span class="perlbl" style="color:var(--mut);font-weight:400">${perLbl}</span></span>`;}
+    // neutral delta (no good/bad colour): used for the live-issues count where up/down is not inherently better/worse
+    const dBadgeNeutral=(cur,prev)=>{
+      if(cur==null) return '';
+      if(prev==null) return `<span class="dlt" style="color:var(--mut)">no prior ${spanD}d data</span>`;
+      const d=cur-prev;
+      if(d===0)return `<span class="dlt" style="color:var(--mut)">▬ no change ${perLbl}</span>`;
+      const ar=d>0?'▲':'▼';const pct=prev!==0?Math.round(Math.abs(d)/Math.abs(prev)*100):null;const pctV=pct==null?'':` (${d>0?'+':'−'}${pct}%)`;
+      return `<span class="dlt" style="color:var(--mut)">${ar} ${d>0?'+':'−'}${Math.abs(d)}${pctV} <span class="perlbl">${perLbl}</span></span>`;}
     const M=metricsOf(iss);
     // gap card: shows the AVERAGE ADVERSE gap (reception more negative than official). No adverse → 0.00 green.
     const gapFill=(nKey,divKey,avgKey,nEl,xEl,noneTxt)=>{
@@ -753,7 +779,7 @@ function render(B){
       set('kpiPSN',`<span style="color:${dom[1]}">${dom[0]}</span>`);
       set('kpiPSX',`<div class="sbar3">${ps.pos?`<i style="width:${w(ps.pos)}%;background:var(--green)"></i>`:''}${ps.mix?`<i style="width:${w(ps.mix)}%;background:var(--amber)"></i>`:''}${ps.neg?`<i style="width:${w(ps.neg)}%;background:var(--red)"></i>`:''}</div><div class="sbar3leg"><span style="color:var(--green)"><b>${pc(ps.pos)}%</b></span><span style="color:var(--amber)"><b>${pc(ps.mix)}%</b></span><span style="color:var(--red)"><b>${pc(ps.neg)}%</b></span></div>`);}
     else {set('kpiPSN','<span style="color:var(--mut)">—</span>');set('kpiPSX','no public reaction yet');}
-    set('kpiEmgN',`<span style="color:var(--ink)">${M.emg}</span>`);set('kpiEmgX',`of ${iss.length} tracked`);
+    set('kpiEmgN',`<span style="color:var(--ink)">${M.live}</span>`);set('kpiEmgX',`${M.emg} emerging · ${M.act} active`);
     // cards now open an inline trend panel (replaces the jump-to-Issues)
     // period-over-period: fetch prior equal-length window, then fill the delta line on each card
     const pf=new Date(RANGE.from||Date.now());pf.setDate(pf.getDate()-spanD);const pt=new Date(RANGE.from||Date.now());pt.setDate(pt.getDate()-1);
@@ -761,7 +787,7 @@ function render(B){
       set('kpiPubD',dBadge(M.pubAvg,P.pubAvg,'',true));
       set('kpiMedD',dBadge(M.medAvg,P.medAvg,'',true));
       set('kpiPSD',dBadge(M.negPct,P.negPct,'%',true));
-      set('kpiEmgD',dBadge(M.emg,P.emg,'',true));
+      set('kpiEmgD',dBadgeNeutral(M.live,P.live));
     }).catch(()=>{});
   }).catch(()=>{});
   document.getElementById("wordcloud").innerHTML='<div class="meta">Loading themes…</div>';
