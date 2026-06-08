@@ -49,6 +49,16 @@
   .kpi.tap{cursor:pointer;transition:border-color .12s}.kpi.tap:hover{border-color:var(--accent)}
   body.tldr .kpi .x{display:none}
   body.tldr .kpi .dlt .perlbl{display:none}
+  /* 4th card (Live issues): keep the emerging/active split visible in TL;DR, but as icons */
+  .kpi .x .xtldr{display:none}
+  body.tldr #kpiEmg .x{display:flex;gap:12px;align-items:center}
+  body.tldr #kpiEmg .x .xfull{display:none}
+  body.tldr #kpiEmg .x .xtldr{display:inline-flex;gap:12px;align-items:center}
+  #kpiEmg .x .xtldr .seg{display:inline-flex;align-items:center;gap:4px}
+  #kpiEmg .x .xtldr svg{width:13px;height:13px}
+  /* Lifecycle-status icon for Issues rows in TL;DR mode */
+  .statico{display:inline-flex;align-items:center;flex:0 0 auto}
+  .statico svg{width:14px;height:14px}
   .pgfoot{margin:26px 0 10px;border:none;background:none}
   .pgfoot>summary{display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;font-weight:600;color:var(--mut);list-style:none;border:1px solid var(--line);border-radius:999px;padding:4px 11px;background:var(--card)}
   .pgfoot>summary:hover{border-color:var(--accent);color:var(--accent)}
@@ -76,6 +86,7 @@
   .morebtn{width:100%;border:1px solid var(--line);background:var(--card);color:var(--accent);font:600 13px/1 inherit;padding:11px;border-radius:10px;cursor:pointer;transition:border-color .12s,background .12s}
   .morebtn:hover{border-color:var(--accent);background:var(--panel)}
   .trendpanel .tnote{font-size:11.5px;color:var(--mut);margin-top:4px}
+  .trendpanel .covnote{font-size:11.5px;color:var(--mut);font-style:italic;margin-top:3px;padding-top:5px;border-top:1px dashed var(--line)}
   .row{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin:8px 0}
   .row[data-topic]{cursor:pointer}.row[data-topic]:hover{border-color:var(--accent)}
   .dot{width:11px;height:11px;border-radius:50%;margin-top:5px;flex:0 0 auto}
@@ -219,7 +230,17 @@
   <section id="incidents">
     <div class="dsec" style="margin-top:4px">Tracked issues <span class="info" tabindex="0" role="button" aria-label="Status help">i<span class="tip">Each issue carries a status based on recent activity: <b>EMERGING</b> — first detected in the last 2 days (new, still developing); <b>ACTIVE</b> — has new items within the past week; <b>QUIET</b> — no new items for 7+ days (cooling off, kept for reference). Status updates automatically on each run.</span></span></div>
     <div id="incidents-list"></div></section>
-  <section id="sources"><table id="src"><thead><tr><th>Source</th><th class="num">Items</th></tr></thead><tbody></tbody></table></section>
+  <section id="sources"><table id="src"><thead><tr><th>Source</th><th class="num">Items</th></tr></thead><tbody></tbody></table>
+    <div class="dsec" style="margin-top:18px">Update schedule (SGT)</div>
+    <table id="sched"><thead><tr><th>Time</th><th>Update</th><th>Days</th></tr></thead><tbody>
+      <tr><td>08:00</td><td>Morning refresh</td><td>Mon–Fri</td></tr>
+      <tr><td>11:45</td><td>Midday refresh</td><td>Mon–Fri</td></tr>
+      <tr><td>16:30</td><td>News refresh</td><td>Mon–Fri</td></tr>
+      <tr><td>20:30</td><td>Evening refresh</td><td>Mon–Fri</td></tr>
+    </tbody></table>
+    <div class="meta" style="margin-top:6px">New items are captured ~30–60 min before each refresh. Source collection runs continuously (every 12 min) and the pipeline is health-checked every 30 min (08:00–22:30). Processing pauses on weekends.</div>
+    <div class="meta" style="margin-top:8px;font-style:italic">Why these windows: timing follows observed local social-media activity — when audiences tend to post and comment through the day — so each refresh lands after reaction has built up, capturing fuller feedback rather than a partial picture. The cadence is set to balance freshness with running only as often as activity warrants.</div>
+  </section>
   <div class="loading" id="loading">Fetching live board…</div>
   <details class="pgfoot">
     <summary>About the dashboard</summary>
@@ -257,7 +278,10 @@ const ICON={
  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>',
  warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></svg>',
  landmark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>',
- scale:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M7 21h10M5 7h14l3 6a4 4 0 0 1-8 0l3-6M2 13l3-6 3 6a4 4 0 0 1-8 0Z"/></svg>'
+ scale:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M7 21h10M5 7h14l3 6a4 4 0 0 1-8 0l3-6M2 13l3-6 3 6a4 4 0 0 1-8 0Z"/></svg>',
+ sprout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></svg>',
+ activity:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+ moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>'
 };
 const info=t=>`<span class="info" tabindex="0" role="button" aria-label="${String(t).replace(/"/g,'&quot;')}">i<span class="tip">${t}</span></span>`;
 function trendSVG(D){
@@ -331,12 +355,16 @@ function sidesHTML(s,tldr){
   const parts=[cell(ICON.landmark,'Official',s.official_n||0,s.off_sent),cell(ICON.news,'Media',s.media_n||0,s.med_sent),cell(ICON.users,'Public',s.public_n||0,s.pub_sent)];
   return `<span class="meta-mut">${parts.join(tldr?'&nbsp;&nbsp;&nbsp;':'<span style="color:var(--mut)"> · </span>')}</span>`;
 }
+// Lifecycle-status icon (TL;DR Issues rows): sprout=emerging, pulse=active, moon=quiet — colours match the status palette.
+const STAT_ICON={emerging:['sprout','var(--amber)'],active:['activity','var(--accent)'],quiet:['moon','var(--mut)']};
+function statusIcon(st){const m=STAT_ICON[st];if(!m)return '';const lbl=st.charAt(0).toUpperCase()+st.slice(1);return `<span class="statico" style="color:${m[1]}" title="${lbl}" aria-label="${lbl}">${ICON[m[0]]}</span>`;}
 function storyRow(s,kind){
   const da=kind==='news'?`data-media="${encodeURIComponent(s.id)}"`:`data-story="${encodeURIComponent(s.id)}"`;
   const tagHtml=[...(s.domains||[]),...(s.themes||[])].slice(0,5).map(x=>`<span class="kw">${x}</span>`).join(' ');
   const sc=s.status==='active'?'var(--accent)':s.status==='emerging'?'var(--amber)':'var(--mut)';
   const stat=(kind!=='news'&&s.status)?`<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;border:1px solid ${sc};color:${sc}">${s.status}</span>`:'';
-  if(TLDR)return `<div class="row tldrrow" ${da}><span class="dot d-${s.rag}"></span><div class="tldrbody"><div class="tldrtop"><span class="t">${s.title}</span>${stat}</div><span class="meta" style="margin:4px 0 0">${sidesHTML(s,true)}</span></div><span class="chev">›</span></div>`;
+  const statIc=(kind!=='news'&&s.status)?statusIcon(s.status):'';
+  if(TLDR)return `<div class="row tldrrow" ${da}><span class="dot d-${s.rag}"></span><div class="tldrbody"><div class="tldrtop"><span class="t">${s.title}</span>${statIc}</div><span class="meta" style="margin:4px 0 0">${sidesHTML(s,true)}</span></div><span class="chev">›</span></div>`;
   const cta=kind==='news'?'Coverage ›':'Details ›';
   return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="t">${s.title}</span>${stat}</div><div class="c" style="display:flex;flex-wrap:wrap;gap:4px;margin:3px 0">${tagHtml||'—'}</div><div class="meta">${sidesHTML(s,false)} · last ${s.last}</div></div><span class="chev">${cta}</span></div>`;
 }
@@ -360,7 +388,11 @@ const STORY_SORTS={
 function sortedStories(){return [...STORIES].sort(STORY_SORTS[STORY_SORT]||STORY_SORTS.recent).map(s=>s.id);}
 let LENS='domain', FILTER={facet:null,tag:null}, NEWS=[], NEWS_KEY=null;
 function ragDotOnly(sc){const v=num(sc);const c=v<-0.1?'var(--red)':v>0.1?'var(--green)':'var(--amber)';return `<span style="color:${c}" title="${v<-0.1?'negative':v>0.1?'positive':'neutral'}">●</span>`;}
-function articleRow(a){return `<div class="feedrow"><a href="${a.u}" target="_blank" rel="noopener">${a.t} ↗</a><div class="fm"><span style="color:var(--ink);font-weight:600">${a.d}</span>${(!TLDR&&a.dom)?`<span class="fchip">${a.dom}</span>`:''}${TLDR?ragDotOnly(a.sc):ragDot(a.sc)}</div></div>`;}
+function articleRow(a,extra){return `<div class="feedrow"><a href="${a.u}" target="_blank" rel="noopener">${a.t} ↗</a><div class="fm"><span style="color:var(--ink);font-weight:600">${a.d}</span>${(!TLDR&&a.dom)?`<span class="fchip">${a.dom}</span>`:''}${TLDR?ragDotOnly(a.sc):ragDot(a.sc)}${extra||''}</div></div>`;}
+// Group news by story (sid): collapse same-event coverage; lead = first in sort order (most recent), others behind a "+N more outlets" inline expander.
+function groupNews(arr){const seen={},units=[];for(const a of arr){const sid=a.sid;if(!sid){units.push({single:a});continue;}if(seen[sid]===undefined){seen[sid]=units.length;units.push({lead:a,others:[]});}else{units[seen[sid]].others.push(a);}}return units;}
+function newsUnitRow(u){if(u.single)return articleRow(u.single);if(!u.others||!u.others.length)return articleRow(u.lead);const n=u.others.length;const tog=`<span class="moretoggle" onclick="event.stopPropagation();toggleOutlets(this)" style="margin-left:10px;font-size:12px;color:var(--mut);cursor:pointer;user-select:none">+${n} more outlet${n>1?'s':''} <span class="mtcar">▾</span></span>`;return `<div class="feedgroup">${articleRow(u.lead,tog)}<div class="moresub" style="display:none;border-left:2px solid var(--line);margin-left:2px;padding-left:10px">${u.others.map(articleRow).join('')}</div></div>`;}
+function toggleOutlets(el){const g=el.closest('.feedgroup');const sub=g&&g.querySelector('.moresub');if(!sub)return;const open=sub.style.display!=='none';sub.style.display=open?'none':'block';const car=el.querySelector('.mtcar');if(car)car.textContent=open?'▾':'▴';}
 // News sorts. NEWS arrives newest-first from get_news, so 'newest' keeps order, 'oldest' reverses.
 let NEWS_SORT='newest';
 const NEWS_SORTS={
@@ -374,7 +406,7 @@ const SORT_OPTS={
 function setSortOptions(tab){const sel=document.getElementById("ssort");if(!sel)return;
   if(tab==='stories'){sel.innerHTML=SORT_OPTS.stories;sel.value=NEWS_SORT;}
   else{sel.innerHTML=SORT_OPTS.incidents;sel.value=STORY_SORT;}}
-function drawStories(){let arr=(NEWS_SORTS[NEWS_SORT]||NEWS_SORTS.newest)([...NEWS]);lazyList(document.getElementById("stories-list"),arr,articleRow,12);}
+function drawStories(){let arr=(NEWS_SORTS[NEWS_SORT]||NEWS_SORTS.newest)([...NEWS]);lazyList(document.getElementById("stories-list"),groupNews(arr),newsUnitRow,12);}
 function storiesKey(){return RANGE.from+'|'+RANGE.to+'|'+(FILTER.tag||'');}
 function drawFilterChip(){const r=document.getElementById("resetfilt");if(r)r.style.display=(FILTER&&FILTER.tag)?'':'none';}
 let ISORT='recent';
@@ -498,6 +530,27 @@ async function openDetail(topic,kind){
   const newsV=(d.news||[]).map(n=>`<div class="dq" style="font-style:normal">${n.t}<span class="src">${platOf(n.u)||'news media'} · ${n.d} · ${ragDot(n.sc)}${n.u?` · <a class="lnk" href="${n.u}" target="_blank" rel="noopener">read article ↗</a>`:''}</span></div>`).join('');
   const offV=off?`<div class="dq" style="font-style:normal">${off.content||'Official communication'}<span class="src">${off.src||'Official source'} · ${off.date} · ${ragDot(off.sent)}${off.url?` · <a class="lnk" href="${off.url}" target="_blank" rel="noopener">read source ↗</a>`:''}</span></div>`:'';
   const nq=(d.quotes||[]).length+(d.news||[]).length+(off?1:0);
+  // AMEC panel — reach + keyword congruence + tone from stored data; comprehension/credibility/target from stories.amec_med/pub (summarize-stories v10).
+  const amWords=s=>kwList(s).join(' ').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').split(/\s+/).filter(w=>w.length>3);
+  const amCong=(a,b)=>{const A=new Set(amWords(a)),B=new Set(amWords(b));if(!A.size||!B.size)return null;let h=0;A.forEach(w=>{if(B.has(w))h++;});return Math.round(100*h/A.size);};
+  const amCell=(cp,n)=>{if(!n)return '—';const c=amCong(sm.kw_off,cp);return c==null?'—':c+'%';};
+  const amTone=(cs,n,gp)=>(off&&n)?`${moodWord(off.sent)}→${moodWord(cs)} <span style="color:var(--mut)">(${gp.verdict})</span>`:'—';
+  const amTd='style="padding:4px 10px;text-align:center"';
+  const AM=d.amec||{}; const aMed=AM.med||null, aPub=AM.pub||null;
+  const amScore=(a,k)=>(a&&a[k]!=null)?a[k]+'%':'<span style="color:var(--mut)">pending</span>';
+  const amCred=a=>(a&&a.credibility!=null)?a.credibility+'%'+(a.stance?` <span style="color:var(--mut)">· ${a.stance}</span>`:''):'<span style="color:var(--mut)">pending</span>';
+  const amTgt=a=>(a&&a.target)?` <span style="color:var(--mut)">· at ${a.target}</span>`:'';
+  const amec=(d.media_n>0||d.public_n>0)?`<details style="margin:10px 0 0;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card)"><summary style="cursor:pointer;font-weight:700">AMEC — message transfer <span style="color:var(--mut);font-weight:400;font-size:11px">· preview</span></summary>
+  <table style="border-collapse:collapse;font-size:12px;margin:8px 0;width:100%">
+  <tr style="color:var(--mut);font-size:11px"><td style="padding:4px 10px"></td><td ${amTd}>Media</td><td ${amTd}>Public</td></tr>
+  <tr><td style="padding:4px 10px">Reach</td><td ${amTd}>${d.media_n||0} items</td><td ${amTd}>${d.public_n||0} items</td></tr>
+  <tr><td style="padding:4px 10px">Frame congruence</td><td ${amTd}>${amCell(sm.kw_med,d.media_n)}</td><td ${amTd}>${amCell(sm.kw_pub,d.public_n)}</td></tr>
+  <tr><td style="padding:4px 10px">Tone vs official</td><td ${amTd}>${amTone(d.med_sent,d.media_n,gMed)}${amTgt(aMed)}</td><td ${amTd}>${amTone(d.pub_sent,d.public_n,gPub)}${amTgt(aPub)}</td></tr>
+  <tr><td style="padding:4px 10px">Comprehension</td><td ${amTd}>${amScore(aMed,'comprehension')}</td><td ${amTd}>${amScore(aPub,'comprehension')}</td></tr>
+  <tr><td style="padding:4px 10px">Credibility</td><td ${amTd}>${amCred(aMed)}</td><td ${amTd}>${amCred(aPub)}</td></tr>
+  </table>
+  <div style="font-size:10.5px;color:var(--mut);line-height:1.5">Reach and tone from stored data; frame congruence is keyword overlap (rough proxy). Comprehension, credibility and sentiment target are model-judged against the official line — qualitative reads, not precise measures. "pending" = no official line yet (external-trigger story).<br>Frames — <b>Official:</b> ${kwShort(sm.kw_off,4)||'—'} · <b>Media:</b> ${kwShort(sm.kw_med,4)||'—'} · <b>Public:</b> ${kwShort(sm.kw_pub,4)||'—'}</div>
+  </details>`:'';
   const verb=nq?`<details><summary>Sources</summary>${offV?`<div class="dsec">Official line</div>${offV}`:''}${pubV?`<div class="dsec">Public posts — representative</div>${pubV}`:''}${newsV?`<div class="dsec">Referenced news — representative</div>${newsV}`:''}</details>`:'';
   document.getElementById("detail").innerHTML=`
     <div class="dsum" style="color:var(--mut);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em">${kind==='story'?(d.status||'Incident'):(EXEC?(d.max_sev>0?sevWord(d.max_sev)+' severity':'Issue'):nameOf(topic)+(d.max_sev>0?` · ⚠ ${Math.round(d.max_sev)}`:''))}</div>
@@ -510,6 +563,7 @@ async function openDetail(topic,kind){
     ${off?`<div class="dsec">The gap ${info("Each dot is the tone of what that side actually said, on a negative→positive scale. The Official dot reflects the tone of the official message itself — a warning, advisory or enforcement action sits on the negative side because the message is cautionary, not a mark against the issuing body. 'Divergence' means a side differs from the official tone by more than 0.3; 'aligned' means they are close. So an official warning that the public also takes negatively is aligned — the public shares the concern and the message landed. The gap to watch is the official tone positive but the public negative, or the reverse. Sentiment is a qualitative read, not a precise measure.")}</div>
     <div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div><div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}
     ${verb}
+    ${amec}
     <div class="meta" style="margin-top:16px;border-top:1px solid var(--barbg);padding-top:8px">${kind==='story'&&d.trig?'Trigger '+d.trig+(facetLine(d)?' · ':''):''}${facetLine(d)?'Facets — '+facetLine(d):''}</div>`;
 }
 function closeDetail(){document.getElementById("ov").classList.remove("on");closeShareMenu();if(getHashIssue()||getHashStory()||getHashNews())history.replaceState(null,'',location.pathname+location.search);}
@@ -621,7 +675,8 @@ const CARD_TREND={
   kpiPub:{title:'Public gap over time',key:'pubAvg',unit:'',fmt:v=>v.toFixed(2),goodDown:true,note:'Average official↔public tone gap. Lower = message landing. Each bar is one period.'},
   kpiMed:{title:'Media gap over time',key:'medAvg',unit:'',fmt:v=>v.toFixed(2),goodDown:true,note:'Average official↔media tone gap. Lower = aligned coverage.'},
   kpiPS:{title:'Public sentiment over time',stacked:true,note:'Each bar = issues with public reaction that period, split positive / mixed / negative. Bar height = number of issues.'},
-  kpiEmg:{title:'Emerging issues over time',key:'emg',unit:'',fmt:v=>String(v),goodDown:true,note:'Newly-detected issues per period.'}};
+  kpiEmg:{title:'Issue status — now',snapshot:true,note:'Promoted issues by current status. Emerging = detected in the last 2 days; Active = new items in the past week; Quiet = no new items for 7+ days.'}};
+const COVERAGE_NOTE='Active tracking began May 2026 (this prototype was built in late May), so earlier periods reflect limited or no data capture — not lower activity.';
 const TREND_PERIODS=7;
 function fmtRange(f,t){const o={day:'2-digit',month:'short'};const a=new Date(f).toLocaleDateString('en-SG',o),b=new Date(t).toLocaleDateString('en-SG',o);return a===b?a:a+'–'+b;}
 let TREND_OPEN=null;
@@ -631,6 +686,7 @@ function openCardTrend(cardId){
   document.querySelectorAll('.kpi').forEach(c=>c.classList.toggle('sel',c.id===cardId));
   if(TREND_OPEN===cardId){panel.hidden=true;TREND_OPEN=null;document.getElementById(cardId)?.classList.remove('sel');return;}
   TREND_OPEN=cardId;
+  if(def.snapshot){openIssueSnapshot(panel,def,cardId);return;}
   const spanD=(RANGE.from&&RANGE.to)?Math.max(1,Math.round((new Date(RANGE.to)-new Date(RANGE.from))/864e5)+1):7;
   panel.hidden=false;panel.innerHTML=`<div class="trendpanel"><div class="th"><h4>${def.title}</h4><button class="cl" aria-label="Close">✕</button></div><div class="meta">${TREND_PERIODS} periods of ${spanD}d each</div><div class="trendbars">${skelBars(TREND_PERIODS)}</div></div>`;
   panel.querySelector('.cl').addEventListener('click',()=>{panel.hidden=true;TREND_OPEN=null;document.getElementById(cardId)?.classList.remove('sel');});
@@ -665,8 +721,23 @@ function openCardTrend(cardId){
      }
      const panel2=document.getElementById("ov-trendpanel");if(!panel2)return;
      panel2.querySelector('.trendbars').innerHTML=bars;
-     panel2.querySelector('.trendpanel').insertAdjacentHTML('beforeend',`<div class="tnote">${def.note}${validN<2?' · not enough history yet for a trend':''}</div>`);
+     panel2.querySelector('.trendpanel').insertAdjacentHTML('beforeend',`<div class="tnote">${def.note}${validN<2?' · not enough history yet for a trend':''}</div><div class="covnote">${COVERAGE_NOTE}</div>`);
    });
+}
+// Snapshot variant of the tap panel: current Emerging / Active / Quiet counts (replaces the volatile over-time histogram for the Live-issues card).
+function openIssueSnapshot(panel,def,cardId){
+  panel.hidden=false;
+  panel.innerHTML=`<div class="trendpanel"><div class="th"><h4>${def.title}</h4><button class="cl" aria-label="Close">✕</button></div><div class="trendbars">${skelBars(3)}</div></div>`;
+  panel.querySelector('.cl').addEventListener('click',()=>{panel.hidden=true;TREND_OPEN=null;document.getElementById(cardId)?.classList.remove('sel');});
+  rpc('get_stories',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{ if(TREND_OPEN!==cardId)return;
+    const iss=(rows||[]).filter(s=>s.promoted);
+    const c={emerging:0,active:0,quiet:0};iss.forEach(i=>{if(c[i.status]!=null)c[i.status]++;});
+    const max=Math.max(1,c.emerging,c.active,c.quiet);
+    const bar=(lbl,n,col)=>`<div class="tb" data-tip="${lbl}: ${n}"><div class="bv">${n}</div><div class="bar" style="height:${Math.max(4,Math.round(n/max*100))}%;background:${col}"></div><div class="bl">${lbl}</div></div>`;
+    const p2=document.getElementById("ov-trendpanel");if(!p2)return;
+    p2.querySelector('.trendbars').innerHTML=bar('Emerging',c.emerging,'var(--amber)')+bar('Active',c.active,'var(--accent)')+bar('Quiet',c.quiet,'var(--mut)');
+    p2.querySelector('.trendpanel').insertAdjacentHTML('beforeend',`<div class="tnote">${def.note} · ${iss.length} tracked</div>`);
+  }).catch(()=>{});
 }
 function skelBars(n){let s='';for(let i=0;i<n;i++){const h=20+((i*23)%60);s+=`<div class="tb"><div class="bv">&nbsp;</div><div class="sk bar" style="height:${h}%;background:var(--barbg)"></div><div class="bl">&nbsp;</div></div>`;}return s;}
 function render(B){
@@ -681,7 +752,9 @@ function render(B){
     <div class="kpi tap" id="kpiPub"><div class="n" id="kpiPubN">—</div><div class="l">Public gap ${info("Across promoted issues that have BOTH an official line and public reaction: the AVERAGE distance between public tone and the official tone (0 = perfectly aligned, higher = wider gap). Above 0.3 = the message is not landing. The change line compares this average to the previous equal-length period. Tap the card for the trend over several periods.")}</div><div class="x" id="kpiPubX">—</div><div class="dlt" id="kpiPubD"></div></div>
     <div class="kpi tap" id="kpiMed"><div class="n" id="kpiMedN">—</div><div class="l">Media gap ${info("Across promoted issues that have BOTH an official line and media coverage: the AVERAGE distance between media tone and the official tone. The change line compares to the previous equal-length period.")}</div><div class="x" id="kpiMedX">—</div><div class="dlt" id="kpiMedD"></div></div>
     <div class="kpi tap" id="kpiPS"><div class="n" id="kpiPSN">—</div><div class="l">Public sentiment ${info("The dominant public mood across promoted issues that have public reaction, with the share positive / mixed / negative. The change line compares the negative share to the previous equal-length period.")}</div><div class="x" id="kpiPSX">—</div><div class="dlt" id="kpiPSD"></div></div>
-    <div class="kpi tap" id="kpiEmg"><div class="n" id="kpiEmgN">—</div><div class="l">Emerging issues ${info("Promoted issues first detected in the last 2 days — newly surfaced and still developing. The change line compares to the previous equal-length period. Tap the card for the trend over several periods.")}</div><div class="x" id="kpiEmgX">—</div><div class="dlt" id="kpiEmgD"></div></div>`;
+    <div class="kpi tap" id="kpiEmg"><div class="n" id="kpiEmgN">—</div><div class="l">Live issues ${info("Promoted issues active in the last 7 days: EMERGING (first detected in the last 2 days) plus ACTIVE (new items within the past week). Quiet issues (no new items for 7+ days) are excluded from the headline. Tap the card for the current Emerging / Active / Quiet split.")}</div><div class="x" id="kpiEmgX">—</div></div>`;
+  // If a KPI trend/snapshot panel was open, re-render it for the new range (range change / refresh re-runs render()).
+  if(TREND_OPEN){const _t=TREND_OPEN;TREND_OPEN=null;openCardTrend(_t);}
   // Issues cards + RAG summary come from the SAME promoted-stories set as the Issues tab (single source of truth)
   rpc('get_stories',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{
     const iss=(rows||[]).filter(s=>s.promoted);
@@ -698,7 +771,7 @@ function render(B){
       const pI=ist.filter(i=>i.public_n>0&&i.pub_sent!=null);let neg=0;pI.forEach(i=>{if(num(i.pub_sent)<=-0.15)neg++;});
       return {pubAvg:avg(pG),pubN:pB.length,pubDiv:pG.length,
               medAvg:avg(mG),medN:mB.length,medDiv:mG.length,
-              negPct:pI.length?Math.round(neg/pI.length*100):null,emg:ist.filter(i=>i.status==='emerging').length};};
+              negPct:pI.length?Math.round(neg/pI.length*100):null,emg:ist.filter(i=>i.status==='emerging').length,act:ist.filter(i=>i.status==='active').length,quiet:ist.filter(i=>i.status==='quiet').length,live:ist.filter(i=>i.status==='emerging'||i.status==='active').length};};
     // period label reflects the actual selected span (prior equal-length window)
     const spanD=(RANGE.from&&RANGE.to)?Math.max(1,Math.round((new Date(RANGE.to)-new Date(RANGE.from))/864e5)+1):30;
     const perLbl=`vs prior ${spanD}d`;
@@ -727,7 +800,8 @@ function render(B){
       set('kpiPSN',`<span style="color:${dom[1]}">${dom[0]}</span>`);
       set('kpiPSX',`<div class="sbar3">${ps.pos?`<i style="width:${w(ps.pos)}%;background:var(--green)"></i>`:''}${ps.mix?`<i style="width:${w(ps.mix)}%;background:var(--amber)"></i>`:''}${ps.neg?`<i style="width:${w(ps.neg)}%;background:var(--red)"></i>`:''}</div><div class="sbar3leg"><span style="color:var(--green)"><b>${pc(ps.pos)}%</b></span><span style="color:var(--amber)"><b>${pc(ps.mix)}%</b></span><span style="color:var(--red)"><b>${pc(ps.neg)}%</b></span></div>`);}
     else {set('kpiPSN','<span style="color:var(--mut)">—</span>');set('kpiPSX','no public reaction yet');}
-    set('kpiEmgN',`<span style="color:var(--ink)">${M.emg}</span>`);set('kpiEmgX',`of ${iss.length} tracked`);
+    set('kpiEmgN',`<span style="color:var(--ink)">${M.live}</span>`);
+    set('kpiEmgX',`<span class="xfull">${M.emg} emerging · ${M.act} active</span><span class="xtldr"><span class="seg" style="color:var(--amber)" title="Emerging">${ICON.sprout}<b>${M.emg}</b></span><span class="seg" style="color:var(--accent)" title="Active">${ICON.activity}<b>${M.act}</b></span></span>`);
     // cards now open an inline trend panel (replaces the jump-to-Issues)
     // period-over-period: fetch prior equal-length window, then fill the delta line on each card
     const pf=new Date(RANGE.from||Date.now());pf.setDate(pf.getDate()-spanD);const pt=new Date(RANGE.from||Date.now());pt.setDate(pt.getDate()-1);
@@ -735,12 +809,11 @@ function render(B){
       set('kpiPubD',dBadge(M.pubAvg,P.pubAvg,'',true));
       set('kpiMedD',dBadge(M.medAvg,P.medAvg,'',true));
       set('kpiPSD',dBadge(M.negPct,P.negPct,'%',true));
-      set('kpiEmgD',dBadge(M.emg,P.emg,'',true));
     }).catch(()=>{});
   }).catch(()=>{});
   document.getElementById("wordcloud").innerHTML='<div class="meta">Loading themes…</div>';
   rpc('get_wordcloud',{p_from:RANGE.from,p_to:RANGE.to}).then(renderCloud).catch(()=>{});
-  rpc('get_news',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{document.getElementById("feed").innerHTML=(rows||[]).slice(0,5).map(articleRow).join('')||emptyState('No headlines yet','Nothing captured in this window.');}).catch(()=>{});
+  rpc('get_news',{p_from:RANGE.from,p_to:RANGE.to}).then(rows=>{document.getElementById("feed").innerHTML=groupNews(rows||[]).slice(0,5).map(newsUnitRow).join('')||emptyState('No headlines yet','Nothing captured in this window.');}).catch(()=>{});
   document.querySelector("#src tbody").innerHTML=(B.sources||[]).map(s=>`<tr><td>${s.s}</td><td class="num">${s.n}</td></tr>`).join('')+`<tr><td><strong>Total</strong></td><td class="num"><strong>${m.total}</strong></td></tr>`;
   loadCapStatus();updateCtrlSum();
 }
