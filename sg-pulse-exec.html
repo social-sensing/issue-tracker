@@ -467,6 +467,8 @@ async function openDetail(topic,kind){
   if(window.gtag)gtag('event',kind==='story'?'story_open':'issue_open',{topic:kind==='story'?topic:codeOf(topic)});
   let d;try{d=kind==='story'?await rpc('get_story_detail',{p_story_id:topic,p_from:RANGE.from,p_to:RANGE.to}):await rpc('get_topic_detail',{p_topic:topic,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load detail: '+e.message+'</div>';return;}
   const off=d.official, sm=d.summary||{};
+  // Unverified official lines (source 'unknown' / missing) drive the GAP but are NOT displayed.
+  const offHide=!!off&&(!off.src||String(off.src).toLowerCase()==='unknown'); const offShow=!!off&&!offHide;
   const tot=Math.max(1,d.total), negshare=Math.round(d.neg/tot*100);
   const moodTone=d.sent<=-0.15?'negative':d.sent>=0.15?'positive':'mixed';
   const title=kind==='story'?(d.title||sm.headline||'Incident'):(sm.headline||nameOf(topic));
@@ -489,7 +491,7 @@ async function openDetail(topic,kind){
   const ptot=Math.max(1,PP+PU+PG);
   const sbar=`<div class="dsec" style="margin-top:6px">${hasPub?'Public sentiment':'Sentiment'} ${info("How the public posts and comments on this incident break down — positive, neutral, negative. The official and media stances appear in the comparison below.")}</div><div class="sbar"><i class="pos" style="width:${PP/ptot*100}%"></i><i class="neu" style="width:${PU/ptot*100}%"></i><i class="neg" style="width:${PG/ptot*100}%"></i></div><div class="sleg">positive ${PP} (${Math.round(PP/ptot*100)}%) · neutral ${PU} (${Math.round(PU/ptot*100)}%) · negative ${PG} (${Math.round(PG/ptot*100)}%)</div>`;
   const pubrange=d.pub_first?(d.pub_first===d.pub_last?d.pub_first:`${d.pub_first}–${d.pub_last}`):'this window';
-  const seq=off
+  const seq=offShow
     ?`<div class="dsec">Event ${info("The sequence: when the official line was issued, and the window of public reaction that followed.")}</div><div class="seq"><span class="seqn off">Official line · ${off.date}</span><span class="chev">→</span><span class="seqn pub">Public reaction · ${pubrange}</span></div>`
     :`<div class="dsec">Event ${info("The sequence: when the official line was issued, and the window of public reaction that followed.")}</div><div class="seq"><span class="seqn empty">No official line</span><span class="chev">→</span><span class="seqn pub">Public signal · ${pubrange}</span></div>`;
   const offBox=off
@@ -551,15 +553,15 @@ async function openDetail(topic,kind){
   </table>
   <div style="font-size:10.5px;color:var(--mut);line-height:1.5">Reach and tone from stored data; frame congruence is keyword overlap (rough proxy). Comprehension, credibility and sentiment target are model-judged against the official line — qualitative reads, not precise measures. "pending" = no official line yet (external-trigger story).<br>Frames — <b>Official:</b> ${kwShort(sm.kw_off,4)||'—'} · <b>Media:</b> ${kwShort(sm.kw_med,4)||'—'} · <b>Public:</b> ${kwShort(sm.kw_pub,4)||'—'}</div>
   </details>`:'';
-  const verb=nq?`<details><summary>Sources</summary>${offV?`<div class="dsec">Official line</div>${offV}`:''}${pubV?`<div class="dsec">Public posts — representative</div>${pubV}`:''}${newsV?`<div class="dsec">Referenced news — representative</div>${newsV}`:''}</details>`:'';
+  const verb=nq?`<details><summary>Sources</summary>${(offV&&offShow)?`<div class="dsec">Official line</div>${offV}`:''}${pubV?`<div class="dsec">Public posts — all</div>${pubV}`:''}${newsV?`<div class="dsec">Referenced news — representative</div>${newsV}`:''}</details>`:'';
   document.getElementById("detail").innerHTML=`
     <div class="dsum" style="color:var(--mut);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.05em">${kind==='story'?(d.status||'Incident'):(EXEC?(d.max_sev>0?sevWord(d.max_sev)+' severity':'Issue'):nameOf(topic)+(d.max_sev>0?` · ⚠ ${Math.round(d.max_sev)}`:''))}</div>
     <div class="dtitle">${title}</div>
     ${TLDR?'':`<p class="dsum">${summary}</p>
     <div class="dsum" style="font-size:12px">Window: last 30 days${d.pub_last?` · latest public post ${d.pub_last}`:''}</div>`}
     ${metrics}${sbar}
-    <div class="dsec">Compare — official · media · public ${info("What each side said — the official statement, the media coverage, and the public reaction. In TL;DR mode these condense to keyword tags.")}</div>
-    <div class="lanes"><div class="lane off ${off?'':'empty'}"><h5><span class="ic">${ICON.landmark}</span>Official</h5>${oB}</div><div class="lane med ${d.media_n>0?'':'empty'}"><h5><span class="ic">${ICON.news}</span>Media</h5>${mB}</div><div class="lane pub"><h5><span class="ic">${ICON.users}</span>Public</h5>${pB}</div></div>
+    <div class="dsec">Compare — ${offHide?'':'official · '}media · public ${info("What each side said — the official statement, the media coverage, and the public reaction. In TL;DR mode these condense to keyword tags.")}</div>
+    <div class="lanes">${offHide?'':`<div class="lane off ${off?'':'empty'}"><h5><span class="ic">${ICON.landmark}</span>Official</h5>${oB}</div>`}<div class="lane med ${d.media_n>0?'':'empty'}"><h5><span class="ic">${ICON.news}</span>Media</h5>${mB}</div><div class="lane pub"><h5><span class="ic">${ICON.users}</span>Public</h5>${pB}</div></div>
     ${off?`<div class="dsec">The gap ${info("Each dot is the tone of what that side actually said, on a negative→positive scale. The Official dot reflects the tone of the official message itself — a warning, advisory or enforcement action sits on the negative side because the message is cautionary, not a mark against the issuing body. 'Divergence' means a side differs from the official tone by more than 0.3; 'aligned' means they are close. So an official warning that the public also takes negatively is aligned — the public shares the concern and the message landed. The gap to watch is the official tone positive but the public negative, or the reverse. Sentiment is a qualitative read, not a precise measure.")}</div>
     <div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div><div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}
     ${verb}
