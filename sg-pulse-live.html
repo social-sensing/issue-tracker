@@ -573,23 +573,32 @@ async function openDetail(topic,kind){
     const qs=(d.quotes||[]).filter(q=>q.sc!=null);
     const pubBkts=[['Negative','var(--red)',q=>num(q.sc)<-0.1],['Neutral','var(--amber)',q=>num(q.sc)>=-0.1&&num(q.sc)<=0.1],['Positive','var(--green)',q=>num(q.sc)>0.1]];
     const pubTot=qs.length, oX=pctX(num(off.sent)), oC=toneCol(num(off.sent));
+    // per-bucket "why" EXPLAINS THE GAP: contrast each group's tone with the official framing (not a restatement of the Compare box)
+    const offW=num(off.sent)>=0.15?'reassuring (positive)':num(off.sent)<=-0.15?'cautionary (negative)':'neutral';
+    const offClip=clip(sm.off||(off&&off.content)||'',80);
+    const gapWhy=(avg,r)=>{const a=num(avg);if(r.verdict==='divergence')return `${a<num(off.sent)?'Far more critical than':'Far more positive than'} the official line (${fmtSent(off.sent)}, ${offW}): this group does not accept the official framing — “${offClip}” — so it lands ${r.d.toFixed(2)} ${a<num(off.sent)?'below':'above'}, a divergence.`;if(r.verdict==='divided')return `The mean sits near the official line (${fmtSent(off.sent)}) but the group spans both sides, so its overall tone neither clearly accepts nor rejects the official message (gap ${r.d.toFixed(2)}).`;return `Within ${r.d.toFixed(2)} of the official line (${fmtSent(off.sent)}, ${offW}): this group's tone broadly tracks the official message, so it largely lands with them.`;};
     const pubRows=qs.length?pubBkts.map(([lbl,c,f])=>{const it=qs.filter(f);if(!it.length)return '';const avg=it.reduce((s,q)=>s+num(q.sc),0)/it.length;const r=vbCalc(avg);const share=Math.round(100*it.length/pubTot);const bX=pctX(avg),lo=Math.min(bX,oX),w=Math.max(2,Math.abs(bX-oX));
       const ex=lbl==='Negative'?it.reduce((a,b)=>num(b.sc)<num(a.sc)?b:a):lbl==='Positive'?it.reduce((a,b)=>num(b.sc)>num(a.sc)?b:a):it.reduce((a,b)=>Math.abs(num(b.sc))<Math.abs(num(a.sc))?b:a);
       return `<div class="gbk"><div class="gbk-top"><span class="gbk-lab" style="color:${c}">● ${lbl} voices</span><span class="gbk-n">${it.length} · ${share}%</span><span class="vb ${r.vv}">${r.verdict}</span><span class="gbk-gap">Gap ${r.d.toFixed(2)}</span></div>`
         +`<div class="gtrack mini"><div class="gbase"></div><div class="gzero"></div><div class="gspan" style="left:${lo}%;width:${w}%"></div>`
         +`<i class="gdot" style="left:${oX}%;background:${oC}" title="Official ${fmtSent(off.sent)}"></i>`
         +`<i class="gdot" style="left:${bX}%;background:${c}" title="${lbl} avg ${fmtSent(avg)}"></i></div>`
-        +(ex&&ex.q?`<div class="subwhy">e.g. “${clip(ex.q,72)}”</div>`:'')+`</div>`;}).join(''):'';
+        +`<div class="subwhy">${gapWhy(avg,r)}</div>`+`</div>`;}).join(''):'';
     if(pubRows)gPub.sub=`<details class="subg"><summary>Details</summary><div class="subnote">Each row is one group of voices — how far its average tone sits from the official tone (${fmtSent(off.sent)}). It shows that group's gap, not a sentiment score.</div>${pubRows}</details>`;
     const isMain=u=>/channelnewsasia|mothership|straitstimes|zaobao|8world|todayonline|asiaone|businesstimes|beritaharian|tamilmurasu|mediacorp/i.test(u||'');
     const outletOf=u=>{try{return u.split('//')[1].split('/')[0].replace(/^www\./,'');}catch(e){return 'source';}};
     const ns=(d.news||[]).filter(n=>n.sc!=null);
+    // media per-outlet "why" EXPLAINS THE GAP: how the outlet's coverage tone (framing) sits vs the official line — not a bare headline.
+    const medGapWhy=(n,r)=>{const sc=num(n.sc);const hl=n.t?` (“${clip(n.t,60)}”)`:'';
+      if(r.verdict==='divergence') return `Coverage tone ${fmtSent(sc)} sits ${r.d.toFixed(2)} ${sc<num(off.sent)?'below':'above'} the ${offW} official line (${fmtSent(off.sent)}) — the framing leans ${sc<num(off.sent)?'to concern/caution':'positive'}${hl}, reading ${sc<num(off.sent)?'more cautionary than':'warmer than'} the official message (framing, not stance).`;
+      if(r.verdict==='favourable') return `Coverage tone ${fmtSent(sc)} is warmer than the ${offW} official line${hl}.`;
+      return `Coverage tone ${fmtSent(sc)} is within ${r.d.toFixed(2)} of the official line — broadly tracks the official framing${hl}.`;};
     const medRow=n=>{const sc=num(n.sc);const r=vbCalc(sc);const bX=pctX(sc),lo=Math.min(bX,oX),w=Math.max(2,Math.abs(bX-oX));
       return `<div class="gbk"><div class="gbk-top"><span class="gbk-lab">${outletOf(n.u)}</span><span class="gbk-n">${fmtSent(sc)}</span><span class="vb ${r.vv}">${r.verdict}</span><span class="gbk-gap">Gap ${r.d.toFixed(2)}</span></div>`
         +`<div class="gtrack mini"><div class="gbase"></div><div class="gzero"></div><div class="gspan" style="left:${lo}%;width:${w}%"></div>`
         +`<i class="gdot" style="left:${oX}%;background:${oC}" title="Official ${fmtSent(off.sent)}"></i>`
         +`<i class="gdot" style="left:${bX}%;background:${toneCol(sc)}" title="${outletOf(n.u)} ${fmtSent(sc)}"></i></div>`
-        +(n.t?`<div class="subwhy">${clip(n.t,72)}</div>`:'')+`</div>`;};
+        +`<div class="subwhy">${medGapWhy(n,r)}</div>`+`</div>`;};
     const medTier=t=>{const arr=ns.filter(n=>isMain(n.u)===(t==='Mainstream'));return arr.length?`<div class="subtier">${t}</div>`+arr.sort((a,b)=>num(a.sc)-num(b.sc)).map(medRow).join(''):'';};
     const medRows=ns.length?medTier('Mainstream')+medTier('Non-mainstream'):'';
     if(medRows)gMed.sub=`<details class="subg"><summary>Details</summary>${medRows}</details>`;
