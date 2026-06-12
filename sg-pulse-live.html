@@ -505,8 +505,10 @@ async function openDetail(topic,kind){
   const kwShort=(s,n)=>kwList(s).slice(0,n).join(' / ');
   const medGist=(d.news||[]).slice(0,3).map(n=>'“'+clip(n.t,90)+'”').join(' · ');
   const pubGist=(d.quotes||[]).slice(0,3).map(q=>'“'+clip(q.q,90)+'”').join(' · ');
-  const medBox=d.media_n>0?`<p>${sm.med?sm.med:`${d.media_n} media item${d.media_n>1?'s':''} — ${moodWord(d.med_sent)} tone overall (see Sources).`}</p><div class="stance">${d.media_n} item${d.media_n>1?'s':''} · ${moodWord(d.med_sent)}</div>`:`<p>No media coverage in this window.</p>`;
-  const pubBox=d.public_n>0?`<p>${sm.pub?sm.pub:`${d.public_n} public post${d.public_n!==1?'s':''} — ${moodWord(d.pub_sent)} tone overall (see Sources).`}</p><div class="stance">${d.public_n} item${d.public_n!==1?'s':''} · ${moodWord(d.pub_sent)}</div>`:`<p>No public discussion in this window.</p>`;
+  // render a summary as point form when it is line-separated (Label — text per line); single-line summaries stay as a paragraph
+  const sumPoints=(txt)=>{const parts=String(txt||'').split(/\n+/).map(s=>s.trim()).filter(Boolean); if(parts.length<=1) return `<p>${txt||''}</p>`; return `<ul style="margin:5px 0 2px;padding-left:16px;font-size:12.5px;line-height:1.5">${parts.map(p=>{const i=p.indexOf('—');return (i>0&&i<30)?`<li style="margin:0 0 6px"><b>${p.slice(0,i).trim()}</b> — ${p.slice(i+1).trim()}</li>`:`<li style="margin:0 0 6px">${p}</li>`;}).join('')}</ul>`;};
+  const medBox=d.media_n>0?`${sm.med?sumPoints(sm.med):`<p>${d.media_n} media item${d.media_n>1?'s':''} — ${moodWord(d.med_sent)} tone overall (see Sources).</p>`}<div class="stance">${d.media_n} item${d.media_n>1?'s':''} · ${moodWord(d.med_sent)}</div>`:`<p>No media coverage in this window.</p>`;
+  const pubBox=d.public_n>0?`${sm.pub?sumPoints(sm.pub):`<p>${d.public_n} public post${d.public_n!==1?'s':''} — ${moodWord(d.pub_sent)} tone overall (see Sources).</p>`}<div class="stance">${d.public_n} item${d.public_n!==1?'s':''} · ${moodWord(d.pub_sent)}</div>`:`<p>No public discussion in this window.</p>`;
   const pins=[];if(off&&off.sent!=null)pins.push({t:'Official',x:num(off.sent),c:'var(--accent)'});if(d.media_n>0)pins.push({t:'Media',x:num(d.med_sent),c:'var(--ink)'});if(d.public_n>0)pins.push({t:'Public',x:num(d.pub_sent),c:'var(--mut)'});
   const gapPair=(label,n,cs,insight,kwCp)=>{
     if(!off) return {t:`<b>Official ↔ ${label}:</b> no official line — not assessed`,short:`<b>${label}:</b> no official line`,v:'amber',verdict:'no official line',detail:'No official line captured — gap not assessed.'};
