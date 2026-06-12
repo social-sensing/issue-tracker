@@ -103,6 +103,12 @@
   .dsec{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 6px;color:var(--accent)}
   .dsub{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin:12px 0 5px}
   .pgrp{margin:8px 0}.pgrp>summary{cursor:pointer;margin:10px 0 5px}.pgrp[open]>summary{margin-bottom:6px}
+  .subg{margin-top:10px;border-top:1px dashed var(--barbg);padding-top:8px}.subg>summary{cursor:pointer;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+  .subrow{font-size:12px;margin:5px 0;line-height:1.5}.subtier{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mut);letter-spacing:.04em;margin:8px 0 3px}
+  .gbk{margin:11px 0}.gbk-top{display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap}.gbk-lab{font-weight:700}.gbk-n{color:var(--mut);font-variant-numeric:tabular-nums}.gbk-gap{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+  .gtrack.mini{height:20px;margin:2px 0 0}.gtrack.mini .gbase{top:10px}.gtrack.mini .gzero{top:5px;height:10px}.gtrack.mini .gzero::after{top:-11px}.gtrack.mini .gdot{top:5px;width:11px;height:11px}.gtrack.mini .gspan{top:9.5px}
+  .subnote{font-size:10.5px;color:var(--mut);margin:6px 0 2px;line-height:1.4}
+  .subwhy{font-size:10.5px;color:var(--mut);font-style:italic;margin:4px 0 0;line-height:1.4}
   .dq.qh{display:none}
   .moreb{display:inline-block;margin:6px 0 2px;font-size:12px;font-weight:600;color:var(--accent);background:none;border:0;cursor:pointer;padding:2px 0}.moreb:hover{text-decoration:underline}
   .note{font-size:12px;color:var(--mut);background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin:10px 0}
@@ -329,7 +335,7 @@ function gapPane(label,off,otherSent,otherN,gp){
     +`<i class="gdot" style="left:${tx}%;background:${tc}" title="${label} ${fmtSent(otherSent)}"></i></div>`
     +`<div class="gends"><span>negative</span><span>positive</span></div>`
     +`<div class="glegend"><span><i style="background:${oc}"></i>Official ${fmtSent(off.sent)}</span><span><i style="background:${tc}"></i>${label} ${fmtSent(otherSent)}</span></div>`
-    +`<div class="gapsum" style="margin-top:10px">${strip(gp.detail||'')}</div></div>`;
+    +`<div class="gapsum" style="margin-top:10px">${strip(gp.detail||'')}</div>${gp.sub||''}</div>`;
 }
 function issueRow(s){
   if(TLDR){
@@ -383,6 +389,8 @@ const STAT_ORD={active:0,emerging:1,quiet:2};
 // Directional gap. d = official − reception; positive d means reception is MORE NEGATIVE than
 // the official tone = ADVERSE (the concern). Negative d = reception more positive = FAVOURABLE (fine).
 function gapDir(offSent,sideSent){const d=Math.round((num(offSent)-num(sideSent))*100)/100;return {d,absd:Math.abs(d),adverse:d>0.3,favourable:d<-0.3,aligned:Math.abs(d)<=0.3};}
+// Tone-mix descriptor for a side — considers polarisation (both wings large) rather than only the mean.
+function distNarr(pos,neu,neg){const T=(pos||0)+(neu||0)+(neg||0);if(!T)return null;const pp=Math.round(100*pos/T),pn=Math.round(100*neg/T),pu=Math.round(100*neu/T);let kind,txt;if(pp>=25&&pn>=25){kind='split';txt=`split — ${pn}% negative vs ${pp}% positive (${pu}% neutral)`;}else if(pn>pp){kind='neg';txt=`mostly negative (${pn}%${pp?`, ${pp}% positive`:''})`;}else if(pp>pn){kind='pos';txt=`mostly positive (${pp}%${pn?`, ${pn}% negative`:''})`;}else{kind='even';txt=`evenly mixed (${pn}% neg / ${pp}% pos)`;}return {kind,pp,pn,pu,txt};}
 // sort key: adverse magnitude only (favourable/aligned sort to the bottom)
 const sideGap=(s,which)=>{const cs=which==='pub'?s.pub_sent:s.med_sent;if(!s.official_n||s.off_sent==null||cs==null)return -1;const g=gapDir(s.off_sent,cs);return g.adverse?g.d:-1;};
 const STORY_SORTS={
@@ -505,6 +513,9 @@ async function openDetail(topic,kind){
   const metrics=`<div class="mgrid">${gapCard('Public',d.public_n,d.pub_sent)}${gapCard('Media',d.media_n,d.med_sent)}${mcard('Public sentiment',psWord,ICON.users,psCol)}${mcard('Engagement',Number(d.engagement||0).toLocaleString('en-SG'),ICON.heart)}</div>`;
   const hasPub=d.pub_pos!=null;
   const PP=hasPub?(d.pub_pos||0):d.pos, PU=hasPub?(d.pub_neu||0):d.neu, PG=hasPub?(d.pub_neg||0):d.neg;
+  // Media tone buckets derived as all − public (m = public ∪ media in get_story_detail); only when the public split is available.
+  const MP=hasPub?Math.max(0,(d.pos||0)-(d.pub_pos||0)):0, MU=hasPub?Math.max(0,(d.neu||0)-(d.pub_neu||0)):0, MG=hasPub?Math.max(0,(d.neg||0)-(d.pub_neg||0)):0;
+  const pubDist=hasPub?{pos:PP,neu:PU,neg:PG}:null, medDist=hasPub?{pos:MP,neu:MU,neg:MG}:null;
   const ptot=Math.max(1,PP+PU+PG);
   const sbar=`<div class="dsec" style="margin-top:6px">${hasPub?'Public sentiment':'Sentiment'} ${info("How the public posts and comments on this incident break down — positive, neutral, negative. The official and media stances appear in the comparison below.")}</div><div class="sbar"><i class="pos" style="width:${PP/ptot*100}%"></i><i class="neu" style="width:${PU/ptot*100}%"></i><i class="neg" style="width:${PG/ptot*100}%"></i></div><div class="sleg">positive ${PP} (${Math.round(PP/ptot*100)}%) · neutral ${PU} (${Math.round(PU/ptot*100)}%) · negative ${PG} (${Math.round(PG/ptot*100)}%)</div>`;
   const pubrange=d.pub_first?(d.pub_first===d.pub_last?d.pub_first:`${d.pub_first}–${d.pub_last}`):'this window';
@@ -529,23 +540,60 @@ async function openDetail(topic,kind){
   const distMood=(P,U,G)=>{const T=P+U+G; if(!T) return moodWord(d.pub_sent); const mx=Math.max(P,U,G); let w='Mixed',c='var(--amber)'; if(mx/T>=0.55){ if(G===mx){w='Negative';c='var(--red)';} else if(P===mx){w='Positive';c='var(--green)';} } return `<span style="color:${c}">${w}</span>`;};
   const pubBox=d.public_n>0?`${sm.pub?sumPoints(sm.pub):`<p>${d.public_n} public post${d.public_n!==1?'s':''} — ${moodWord(d.pub_sent)} tone overall (see Sources).</p>`}<div class="stance">${d.public_n} item${d.public_n!==1?'s':''} · ${distMood(PP,PU,PG)}</div>`:`<p>No public discussion in this window.</p>`;
   const pins=[];if(off&&off.sent!=null)pins.push({t:'Official',x:num(off.sent),c:'var(--accent)'});if(d.media_n>0)pins.push({t:'Media',x:num(d.med_sent),c:'var(--ink)'});if(d.public_n>0)pins.push({t:'Public',x:num(d.pub_sent),c:'var(--mut)'});
-  const gapPair=(label,n,cs,insight,kwCp)=>{
+  const gapPair=(label,n,cs,insight,kwCp,mix)=>{
     if(!off) return {t:`<b>Official ↔ ${label}:</b> no official line — not assessed`,short:`<b>${label}:</b> no official line`,v:'amber',verdict:'no official line',detail:'No official line captured — gap not assessed.'};
     if(n&&cs==null) return {t:`<b>Official ↔ ${label}:</b> ${n} ${label.toLowerCase()} item${n!==1?'s':''} captured — sentiment scoring pending`,short:`<b>${label}:</b> scoring…`,v:'amber',verdict:'scoring pending',detail:`${n} ${label.toLowerCase()} item${n!==1?'s':''} captured; sentiment not yet scored (updates after the next processing run).`};
     if(!n) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber',verdict:'no data',detail:`No ${label.toLowerCase()} captured in this window.`};
     const g=gapDir(off.sent,cs); const dist=g.absd;
     const verdict=g.adverse?'divergence':g.favourable?'favourable':'aligned'; const vv=g.adverse?'red':g.favourable?'amber':'green';
     const toneW=x=>x<=-0.15?'negative':x>=0.15?'positive':'neutral';
-    const detail=insight?insight:`${label} reaction is ${toneW(num(cs))} (avg ${num(cs).toFixed(2)}) against a ${toneW(num(off.sent))} official line${off.sent!=null?` (${num(off.sent).toFixed(2)})`:''} — from ${n} ${label.toLowerCase()} item${n!==1?'s':''}.`;
+    const dn=mix?distNarr(mix.pos,mix.neu,mix.neg):null;
+    const cs2=num(cs).toFixed(2), off2=num(off.sent).toFixed(2), offTW=toneW(num(off.sent)), gd=dist.toFixed(2);
+    let detail;
+    if(insight){detail=insight;}
+    else if(dn&&dn.kind==='split'){detail=`${label} opinion is ${dn.txt} — mean ${cs2}. The average lands ${verdict==='aligned'?`within ${gd} of`:`${gd} from`} the ${offTW} official line (${off2}) and reads "${verdict}", but the mean masks a divided audience — the ${dn.pn>=dn.pp?'larger share critical':'larger share supportive'}. ${n} item${n!==1?'s':''}.`;}
+    else if(dn){detail=`${label} is ${dn.txt} — mean ${cs2} vs the ${offTW} official line (${off2}); ${verdict} (gap ${gd}), ${n} item${n!==1?'s':''}.`;}
+    else{detail=`${label} reaction is ${toneW(num(cs))} (avg ${cs2}) against a ${offTW} official line (${off2}) — ${verdict} (gap ${gd}), from ${n} ${label.toLowerCase()} item${n!==1?'s':''}.`;}
     const offK=kwShort(sm.kw_off,3), cpK=kwShort(kwCp,3);
     const short=(offK&&cpK)?`<b>${label} — ${verdict}:</b> ${offK} ↔ ${cpK}`:`<b>${label} — ${verdict}:</b> ${clipW(detail,10)}`;
     return {t:`<b>Official ↔ ${label} — ${verdict}:</b> ${detail}`,short,v:vv,verdict,detail:TLDR?(short.replace(/<\/?b>/g,'')):detail};
   };
-  const gPub=gapPair('Public',d.public_n,d.pub_sent,sm.gap_pub,sm.kw_pub), gMed=gapPair('Media',d.media_n,d.med_sent,sm.gap_med,sm.kw_med);
+  const gPub=gapPair('Public',d.public_n,d.pub_sent,sm.gap_pub,sm.kw_pub,pubDist), gMed=gapPair('Media',d.media_n,d.med_sent,sm.gap_med,sm.kw_med,medDist);
+  // Sub-score breakdowns under each gap card (full mode). Public → by sentiment bucket (from quotes); Media → by outlet, grouped mainstream/non-mainstream (from news).
+  if(off){
+    const vbCalc=avg=>{const g=gapDir(off.sent,avg);return {verdict:g.adverse?'divergence':g.favourable?'favourable':'aligned',vv:g.adverse?'red':g.favourable?'amber':'green',d:g.absd};};
+    const whyOf=v=>v==='divergence'?'runs against the official tone':v==='favourable'?'warmer than the official line':'close to the official tone';
+    const qs=(d.quotes||[]).filter(q=>q.sc!=null);
+    const pubBkts=[['Negative','var(--red)',q=>num(q.sc)<-0.1],['Neutral','var(--amber)',q=>num(q.sc)>=-0.1&&num(q.sc)<=0.1],['Positive','var(--green)',q=>num(q.sc)>0.1]];
+    const pubTot=qs.length, oX=pctX(num(off.sent)), oC=toneCol(num(off.sent));
+    const pubRows=qs.length?pubBkts.map(([lbl,c,f])=>{const it=qs.filter(f);if(!it.length)return '';const avg=it.reduce((s,q)=>s+num(q.sc),0)/it.length;const r=vbCalc(avg);const share=Math.round(100*it.length/pubTot);const bX=pctX(avg),lo=Math.min(bX,oX),w=Math.max(2,Math.abs(bX-oX));
+      const ex=lbl==='Negative'?it.reduce((a,b)=>num(b.sc)<num(a.sc)?b:a):lbl==='Positive'?it.reduce((a,b)=>num(b.sc)>num(a.sc)?b:a):it.reduce((a,b)=>Math.abs(num(b.sc))<Math.abs(num(a.sc))?b:a);
+      return `<div class="gbk"><div class="gbk-top"><span class="gbk-lab" style="color:${c}">● ${lbl}</span><span class="gbk-n">${it.length} · ${share}%</span><span class="vb ${r.vv}">${r.verdict}</span><span class="gbk-gap">gap ${r.d.toFixed(2)}</span></div>`
+        +`<div class="gtrack mini"><div class="gbase"></div><div class="gzero"></div><div class="gspan" style="left:${lo}%;width:${w}%"></div>`
+        +`<i class="gdot" style="left:${oX}%;background:${oC}" title="Official ${fmtSent(off.sent)}"></i>`
+        +`<i class="gdot" style="left:${bX}%;background:${c}" title="${lbl} avg ${fmtSent(avg)}"></i></div>`
+        +(ex&&ex.q?`<div class="subwhy">e.g. “${clip(ex.q,72)}”</div>`:'')+`</div>`;}).join(''):'';
+    if(pubRows)gPub.sub=`<details class="subg"><summary>Details</summary><div class="subnote">Each bar: the bucket's average tone (coloured dot) against the official tone (${fmtSent(off.sent)}) — the span is the gap.</div>${pubRows}</details>`;
+    const isMain=u=>/channelnewsasia|mothership|straitstimes|zaobao|8world|todayonline|asiaone|businesstimes|beritaharian|tamilmurasu|mediacorp/i.test(u||'');
+    const outletOf=u=>{try{return u.split('//')[1].split('/')[0].replace(/^www\./,'');}catch(e){return 'source';}};
+    const ns=(d.news||[]).filter(n=>n.sc!=null);
+    const medRow=n=>{const sc=num(n.sc);const r=vbCalc(sc);const bX=pctX(sc),lo=Math.min(bX,oX),w=Math.max(2,Math.abs(bX-oX));
+      return `<div class="gbk"><div class="gbk-top"><span class="gbk-lab">${outletOf(n.u)}</span><span class="gbk-n">${fmtSent(sc)}</span><span class="vb ${r.vv}">${r.verdict}</span><span class="gbk-gap">gap ${r.d.toFixed(2)}</span></div>`
+        +`<div class="gtrack mini"><div class="gbase"></div><div class="gzero"></div><div class="gspan" style="left:${lo}%;width:${w}%"></div>`
+        +`<i class="gdot" style="left:${oX}%;background:${oC}" title="Official ${fmtSent(off.sent)}"></i>`
+        +`<i class="gdot" style="left:${bX}%;background:${toneCol(sc)}" title="${outletOf(n.u)} ${fmtSent(sc)}"></i></div>`
+        +(n.t?`<div class="subwhy">${clip(n.t,72)}</div>`:'')+`</div>`;};
+    const medTier=t=>{const arr=ns.filter(n=>isMain(n.u)===(t==='Mainstream'));return arr.length?`<div class="subtier">${t}</div>`+arr.sort((a,b)=>num(a.sc)-num(b.sc)).map(medRow).join(''):'';};
+    const medRows=ns.length?medTier('Mainstream')+medTier('Non-mainstream'):'';
+    if(medRows)gMed.sub=`<details class="subg"><summary>Details</summary><div class="subnote">Score = tone of each outlet's coverage, not its stance — reporting on a sensitive ruling carries cautionary language even when neutral. The headline shows the framing.</div>${medRows}</details>`;
+  }
   let v,verdict;
   if(!off){v='amber';verdict='no official line';}
   else{const vs=[gPub.v,gMed.v];v=vs.includes('red')?'red':(vs.every(x=>x==='green')?'green':'amber');verdict=v==='red'?'divergence':v==='green'?'aligned':'mixed';}
   const gapSummary=off?(TLDR?`${gPub.short}<br>${gMed.short}`:`${gPub.t}<br>${gMed.t}`):'No official line captured — gap not assessed (external signal only, E10).';
+  // TL;DR: one short line summarising BOTH gaps (overall read), instead of the two detailed gap cards.
+  const gapCell=(label,n,cs,gp)=>{if(!off)return '';if(!n)return `<b>${label}</b> no data`;if(cs==null)return `<b>${label}</b> scoring…`;const dist=Math.abs(num(off.sent)-num(cs)).toFixed(2);return `<b>${label}</b> <span class="vb ${gp.v}">${gp.verdict}</span> ${fmtSent(cs)} <span style="color:var(--mut)">(gap ${dist})</span>`;};
+  const gapTldrLine=off?`<span style="color:var(--mut)">Official</span> ${fmtSent(off.sent)} &nbsp;→&nbsp; ${gapCell('Public',d.public_n,d.pub_sent,gPub)} &nbsp;·&nbsp; ${gapCell('Media',d.media_n,d.med_sent,gMed)}`:'';
   const oB=TLDR?(off?`<div>${kwChips(sm.kw_off)||clipW(sm.off||off.content,9)}</div><div class="stance">${off.src||'Official'} · ${moodWord(off.sent)}</div>`:`<div class="stance">No official line</div>`):offBox;
   const mB=TLDR?(d.media_n>0?`<div>${kwChips(sm.kw_med)||clipW(sm.med||(d.news&&d.news[0]?d.news[0].t:''),9)}</div><div class="stance">${moodWord(d.med_sent)} · ${d.media_n} item${d.media_n!==1?'s':''}</div>`:`<div class="stance">—</div>`):medBox;
   const pB=TLDR?(d.public_n>0?`<div>${kwChips(sm.kw_pub)||clipW(sm.pub||(d.quotes&&d.quotes[0]?d.quotes[0].q:''),9)}</div><div class="stance">${moodWord(d.pub_sent)} · ${d.public_n} item${d.public_n!==1?'s':''}</div>`:`<div class="stance">—</div>`):pubBox;
@@ -588,7 +636,7 @@ async function openDetail(topic,kind){
     <div class="dsec">Compare — official · media · public ${info("What each side said — the official statement, the media coverage, and the public reaction. In TL;DR mode these condense to keyword tags.")}</div>
     <div class="lanes"><div class="lane off ${off?'':'empty'}"><h5><span class="ic">${ICON.landmark}</span>Official</h5>${oB}</div><div class="lane med ${d.media_n>0?'':'empty'}"><h5><span class="ic">${ICON.news}</span>Media</h5>${mB}</div><div class="lane pub"><h5><span class="ic">${ICON.users}</span>Public</h5>${pB}</div></div>
     ${off?`<div class="dsec">The gap ${info("Each dot is the tone of what that side actually said, on a negative→positive scale. The Official dot reflects the tone of the official message itself — a warning, advisory or enforcement action sits on the negative side because the message is cautionary, not a mark against the issuing body. 'Divergence' means a side differs from the official tone by more than 0.3; 'aligned' means they are close. So an official warning that the public also takes negatively is aligned — the public shares the concern and the message landed. The gap to watch is the official tone positive but the public negative, or the reverse. Sentiment is a qualitative read, not a precise measure.")}</div>
-    <div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div><div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}
+    ${TLDR?`<div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;line-height:1.8">${gapTldrLine}</div>`:`<div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`}`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div><div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}
     ${verb}
     ${amec}
     <div class="meta" style="margin-top:16px;border-top:1px solid var(--barbg);padding-top:8px">${kind==='story'&&d.trig?'Trigger '+d.trig+(facetLine(d)?' · ':''):''}${facetLine(d)?'Facets — '+facetLine(d):''}</div>`;
