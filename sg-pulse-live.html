@@ -330,7 +330,7 @@ function gapPane(label,off,otherSent,otherN,gp){
   const ox=pctX(num(off.sent)), tx=pctX(num(otherSent)); const lo=Math.min(ox,tx), w=Math.max(2,Math.abs(ox-tx));
   const dist=Math.abs(num(off.sent)-num(otherSent));
   const oc=toneCol(num(off.sent)), tc=toneCol(num(otherSent));
-  const vcap=gp.verdict==='divergence'?'far from the official tone':gp.verdict==='favourable'?'warmer than the official tone':'close to the official tone';
+  const vcap=gp.verdict==='divergence'?'far from the official tone':gp.verdict==='favourable'?'warmer than the official tone':gp.verdict==='divided'?'mean near official, but opinion is split':'close to the official tone';
   const sideTone=num(otherSent)<=-0.15?'negative':num(otherSent)>=0.15?'positive':'neutral';
   return `<div class="lane gpane"><h5>${head} <span class="vb ${gp.v}">${gp.verdict}</span><span class="ghead">Gap ${dist.toFixed(2)}</span></h5>`
     +`<div class="gapcap">Tone ${sideTone} (${fmtSent(otherSent)}) · gap ${dist.toFixed(2)} from official ${fmtSent(off.sent)} = <b>${gp.verdict}</b> (${vcap})</div>`
@@ -550,7 +550,9 @@ async function openDetail(topic,kind){
     if(n&&cs==null) return {t:`<b>Official ↔ ${label}:</b> ${n} ${label.toLowerCase()} item${n!==1?'s':''} captured — sentiment scoring pending`,short:`<b>${label}:</b> scoring…`,v:'amber',verdict:'scoring pending',detail:`${n} ${label.toLowerCase()} item${n!==1?'s':''} captured; sentiment not yet scored (updates after the next processing run).`};
     if(!n) return {t:`<b>Official ↔ ${label}:</b> not enough data (no ${label.toLowerCase()} in this window)`,short:`<b>${label}:</b> no data`,v:'amber',verdict:'no data',detail:`No ${label.toLowerCase()} captured in this window.`};
     const g=gapDir(off.sent,cs); const dist=g.absd;
-    const verdict=g.adverse?'divergence':g.favourable?'favourable':'aligned'; const vv=g.adverse?'red':g.favourable?'amber':'green';
+    let verdict=g.adverse?'divergence':g.favourable?'favourable':'aligned'; let vv=g.adverse?'red':g.favourable?'amber':'green';
+    // Polarisation override: a mean-"aligned" side whose opinion is split (both wings >=25%) is DIVIDED, not aligned.
+    if(verdict==='aligned'&&mix){const T=(mix.pos||0)+(mix.neu||0)+(mix.neg||0); if(T&&mix.pos/T>=0.25&&mix.neg/T>=0.25){verdict='divided';vv='amber';}}
     const toneW=x=>x<=-0.15?'negative':x>=0.15?'positive':'neutral';
     const dn=mix?distNarr(mix.pos,mix.neu,mix.neg):null;
     const cs2=num(cs).toFixed(2), off2=num(off.sent).toFixed(2), offTW=toneW(num(off.sent)), gd=dist.toFixed(2);
@@ -641,7 +643,7 @@ async function openDetail(topic,kind){
     <div class="dsec">Compare — official · media · public ${info("What each side said — the official statement, the media coverage, and the public reaction. In TL;DR mode these condense to keyword tags.")}</div>
     <div class="lanes"><div class="lane off ${off?'':'empty'}"><h5><span class="ic">${ICON.landmark}</span>Official</h5>${oB}</div><div class="lane med ${d.media_n>0?'':'empty'}"><h5><span class="ic">${ICON.news}</span>Media</h5>${mB}</div><div class="lane pub"><h5><span class="ic">${ICON.users}</span>Public</h5>${pB}</div></div>
     ${off?`<div class="dsec">The gap ${info("Each dot is the tone of what that side actually said, on a negative→positive scale. The Official dot reflects the tone of the official message itself — a warning, advisory or enforcement action sits on the negative side because the message is cautionary, not a mark against the issuing body. 'Divergence' means a side differs from the official tone by more than 0.3; 'aligned' means they are close. So an official warning that the public also takes negatively is aligned — the public shares the concern and the message landed. The gap to watch is the official tone positive but the public negative, or the reverse. Sentiment is a qualitative read, not a precise measure.")}</div>
-    <div class="gapclar">Gap = how far each side's tone sits from the official tone — <b>not the sentiment itself</b>. <b>Aligned</b> = close to the official tone · <b>Divergence</b> = far from it. (A negative audience that shares the official's concern still reads <i>aligned</i>.)</div>
+    <div class="gapclar">Gap = how far each side's tone sits from the official tone — <b>not the sentiment itself</b>. <b>Aligned</b> = close · <b>Divergence</b> = far · <b>Divided</b> = mean is close but opinion is split (both sides ≥25%). (A negative audience that shares the official's concern still reads <i>aligned</i>.)</div>
     ${TLDR?`<div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;line-height:1.8">${gapTldrLine}</div>`:`<div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`}`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div><div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}
     ${verb}
     ${amec}
