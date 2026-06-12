@@ -147,6 +147,8 @@
   .lane{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--card)}.lane h5{margin:0 0 6px;font-size:12px;color:var(--ink);display:flex;align-items:center;gap:6px}.lane p{margin:0;font-size:13px;color:var(--ink)}.lane .stance{font-size:11px;color:var(--mut);margin-top:6px}.lane.empty{border-style:dashed;opacity:.7}
   .ic{display:inline-flex;align-items:center;color:var(--mut)}.ic svg{width:14px;height:14px}
   .kw{display:inline-block;font-size:10.5px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin:3px 4px 0 0;color:var(--mut)}
+  .kw[hidden]{display:none}
+  .kwmore{display:inline-block;font-size:10.5px;font-weight:700;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:1px 8px;margin:3px 4px 0 0;color:var(--accent);cursor:pointer}.kwmore:hover{border-color:var(--accent)}
   .ruler{margin:0 0 16px}.ruler .rh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}.ruler .rh b{font-weight:600;font-size:13px}
   .vb{font-size:11px;border-radius:6px;padding:2px 9px}.vb.red{background:var(--redbg);color:var(--redtx)}.vb.green{background:var(--greenbg);color:var(--greentx)}.vb.amber{background:var(--panel);color:var(--ambertx)}
   .track{position:relative;height:30px}.track .base{position:absolute;top:13px;left:0;right:0;height:4px;background:var(--barbg);border-radius:2px}.track .span{position:absolute;top:13px;height:4px;border-radius:2px}
@@ -364,7 +366,11 @@ const STAT_ICON={emerging:['sprout','var(--amber)'],active:['activity','var(--ac
 function statusIcon(st){const m=STAT_ICON[st];if(!m)return '';const lbl=st.charAt(0).toUpperCase()+st.slice(1);return `<span class="statico" style="color:${m[1]}" title="${lbl}" aria-label="${lbl}">${ICON[m[0]]}</span>`;}
 function storyRow(s,kind){
   const da=kind==='news'?`data-media="${encodeURIComponent(s.id)}"`:`data-story="${encodeURIComponent(s.id)}"`;
-  const tagHtml=[...(s.domains||[]),...(s.themes||[])].slice(0,5).map(x=>`<span class="kw">${x}</span>`).join(' ');
+  // Issues list: show only the top topic chip by default; a "+N" button reveals the rest (non-TL;DR rows).
+  const allTags=[...(s.domains||[]),...(s.themes||[])].slice(0,5);
+  const tagHtml=allTags.length<=1
+    ? allTags.map(x=>`<span class="kw">${x}</span>`).join('')
+    : `<span class="kw">${allTags[0]}</span>`+allTags.slice(1).map(x=>`<span class="kw kwx" hidden>${x}</span>`).join('')+`<button type="button" class="kwmore" onclick="moreChips(event,this)" aria-label="Show ${allTags.length-1} more topics" title="Show all topics">+${allTags.length-1}</button>`;
   const sc=s.status==='active'?'var(--accent)':s.status==='emerging'?'var(--amber)':'var(--mut)';
   const stat=(kind!=='news'&&s.status)?`<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;border:1px solid ${sc};color:${sc}">${s.status}</span>`:'';
   const statIc=(kind!=='news'&&s.status)?statusIcon(s.status):'';
@@ -402,6 +408,8 @@ function pmore(btn){const det=btn.closest('details');if(!det)return;const B=10;l
 // On closing the Sources panel, reset every public group back to its initial state: re-hide past the first 10,
 // restore the "Show more" button, and recollapse the group — so reopening shows the clean first-10 view.
 function srcToggle(det){if(det.open)return;const B=10;det.querySelectorAll('.pgrp').forEach(grp=>{const rows=[...grp.querySelectorAll('.dq')];rows.forEach((r,i)=>r.classList.toggle('qh',i>=B));let btn=grp.querySelector('.moreb');const hidden=rows.length-B;if(hidden>0){if(!btn){btn=document.createElement('button');btn.type='button';btn.className='moreb';btn.setAttribute('onclick','pmore(this)');}btn.textContent=`Show ${Math.min(B,hidden)} more (${hidden} hidden)`;grp.appendChild(btn);}else if(btn){btn.remove();}grp.removeAttribute('open');});}
+// Issues row: reveal the remaining topic chips and drop the "+N" button; stop the click from opening the row.
+function moreChips(e,btn){e.stopPropagation();const c=btn.parentElement;if(c)c.querySelectorAll('.kwx').forEach(x=>x.hidden=false);btn.remove();}
 // News sorts. NEWS arrives newest-first from get_news, so 'newest' keeps order, 'oldest' reverses.
 let NEWS_SORT='newest';
 const NEWS_SORTS={
