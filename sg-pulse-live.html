@@ -495,7 +495,7 @@ async function openDetail(topic,kind){
   document.getElementById("detail").innerHTML='<div class="sk" style="height:22px;width:62%;margin:4px 0 14px"></div>'+skelList(4);
   document.getElementById("ov").classList.add("on");
   if(window.gtag)gtag('event',kind==='story'?'story_open':'issue_open',{topic:kind==='story'?topic:codeOf(topic)});
-  let d;try{d=kind==='story'?await rpc('get_story_detail',{p_story_id:topic,p_from:RANGE.from,p_to:RANGE.to}):await rpc('get_topic_detail',{p_topic:topic,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load detail: '+e.message+'</div>';return;}
+  let d;try{d=kind==='story'?await rpc('get_public_story_detail',{p_story_id:topic,p_from:RANGE.from,p_to:RANGE.to}):await rpc('get_public_topic_detail',{p_topic:topic,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load detail: '+e.message+'</div>';return;}
   const off=d.official, sm=d.summary||{};
   // Unverified official lines (source 'unknown' / missing) drive the GAP but are NOT displayed.
   const offHide=!!off&&(!off.src||String(off.src).toLowerCase()==='unknown'); const offShow=!!off&&!offHide;
@@ -666,7 +666,7 @@ async function openMedia(id){
   updateNav();
   document.getElementById("detail").innerHTML='<div class="sk" style="height:22px;width:55%;margin:4px 0 14px"></div>'+skelList(5);
   document.getElementById("ov").classList.add("on");
-  let d;try{d=await rpc('get_story_detail',{p_story_id:id,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load coverage: '+e.message+'</div>';return;}
+  let d;try{d=await rpc('get_public_story_detail',{p_story_id:id,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load coverage: '+e.message+'</div>';return;}
   const fl=facetLine(d);
   const news=(d.news||[]);
   const artList=news.length?news.map(n=>`<div class="dq" style="font-style:normal">${n.t}<span class="src">${platOf(n.u)||'news media'} · ${n.d} · ${ragDot(n.sc)}${n.u?` · <a class="lnk" href="${n.u}" target="_blank" rel="noopener">read article ↗</a>`:''}</span></div>`).join(''):emptyState('No media articles here','No coverage captured in this window.');
