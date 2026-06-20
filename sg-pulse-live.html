@@ -103,9 +103,16 @@
   .dsec{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin:18px 0 6px;color:var(--accent)}
   .dsub{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin:12px 0 5px}
   .pgrp{margin:8px 0}.pgrp>summary{cursor:pointer;margin:10px 0 5px}.pgrp[open]>summary{margin-bottom:6px}
-  .subg{margin-top:10px;border-top:1px dashed var(--barbg);padding-top:8px}.subg>summary{cursor:pointer;font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+  .subg{margin-top:10px}
+  .subg>summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--accent);padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);display:flex;align-items:center;justify-content:space-between;gap:8px;list-style:none;user-select:none}
+  .subg>summary::-webkit-details-marker{display:none}
+  .subg>summary::after{content:'⌄ tap to expand';color:var(--mut);font-size:11px;font-weight:600}
+  .subg[open]>summary::after{content:'⌃ tap to collapse'}
+  .subg>summary:hover{background:var(--accbg);border-color:var(--accent)}
+  .subg[open]>summary{border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom-color:transparent}
   .subrow{font-size:12px;margin:5px 0;line-height:1.5}.subtier{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--mut);letter-spacing:.04em;margin:8px 0 3px}
-  .gbk{margin:11px 0}.gbk-top{display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap}.gbk-lab{font-weight:700}.gbk-n{color:var(--mut);font-variant-numeric:tabular-nums}.gbk-gap{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+  .subgroup{font-size:12px;font-weight:800;color:var(--ink);margin:14px 0 4px;padding-top:9px;border-top:1px solid var(--line)}.subgroup:first-child{border-top:none;padding-top:0;margin-top:4px}
+  .gbk{margin:8px 0;border:1px solid var(--line);border-radius:8px;padding:8px 10px}.gbk-top{display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:nowrap}.gbk-lab{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gbk-lab a{white-space:nowrap}.gbk-n{color:var(--mut);font-variant-numeric:tabular-nums;flex-shrink:0}.gbk-gap{font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0;white-space:nowrap}.vb{flex-shrink:0}
   .gtrack.mini{height:20px;margin:2px 0 0}.gtrack.mini .gbase{top:10px}.gtrack.mini .gzero{top:5px;height:10px}.gtrack.mini .gzero::after{top:-11px}.gtrack.mini .gdot{top:5px;width:11px;height:11px}.gtrack.mini .gspan{top:9.5px}
   .subnote{font-size:10.5px;color:var(--mut);margin:6px 0 2px;line-height:1.4}
   .subwhy{font-size:10.5px;color:var(--mut);font-style:italic;margin:4px 0 0;line-height:1.4}
@@ -139,7 +146,7 @@
   .mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0 14px}.mgrid .m{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;min-height:68px}.mgrid .m .mhead{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.mgrid .m .mic{color:var(--mut);flex:0 0 auto}.mgrid .m .mic svg{width:15px;height:15px}
   .mgrid .m .l{font-size:10px;color:var(--mut);line-height:1.2}.mgrid .m .n{font-size:16px;font-weight:700;margin-top:auto;padding-top:6px}
   .lanes{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 18px}@media(min-width:620px){.lanes{grid-template-columns:repeat(3,1fr)}}
-  .gap2{display:grid;grid-template-columns:1fr;gap:10px;margin:6px 0 18px}@media(min-width:620px){.gap2{grid-template-columns:1fr 1fr}}.gpane .gapsum{font-size:12.5px;color:var(--ink)}
+  .gap2{display:grid;grid-template-columns:1fr;gap:12px;margin:6px 0 18px}.gpane .gapsum{font-size:12.5px;color:var(--ink)}
   .hdr{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:10px}
   .tldrbtn{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;background:var(--card);color:var(--mut);white-space:nowrap;flex:none}.tldrbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
   .hdrbtns{display:flex;gap:6px;flex:none;align-items:center}
@@ -197,6 +204,7 @@
   .sk,.skrow .skdot{background:var(--barbg);background-image:linear-gradient(90deg,var(--barbg) 25%,var(--line) 37%,var(--barbg) 63%);background-size:400% 100%;animation:sh 1.4s ease infinite;border-radius:6px}
   .skrow .skdot{width:10px;height:10px;border-radius:50%;flex:none}
   @keyframes sh{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  @keyframes tpulse{0%,100%{opacity:1}50%{opacity:.25}} .tpz{animation:tpulse 1.2s ease-in-out infinite} @media(prefers-reduced-motion:reduce){.tpz{animation:none}}
   @media (prefers-reduced-motion:reduce){.sk,.skrow .skdot{animation:none}}
   .estate{text-align:center;color:var(--mut);padding:36px 18px}
   .estate svg{width:30px;height:30px;margin:0 auto 11px;display:block;opacity:.45;color:var(--mut)}
@@ -330,6 +338,50 @@ function rulerHTML(pins,verdict,v){
 }
 function toneCol(x){return x>=0.15?'var(--green)':x<=-0.15?'var(--red)':'var(--amber)';}
 function fmtSent(x){const v=num(x);return (v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2);}
+// AMEC composite for the Official<>Media gap: pull-through (primary) + tone + stance, computed from the
+// per-outlet amec reads. Excludes headline-only outlets from the denominator (can't assess those).
+function medAmecComposite(d){
+  const km=d.key_msgs||[]; if(!km.length) return null;
+  const news=(d.news||[]).filter(n=>n&&n.amec); if(!news.length) return null;
+  // pull-through is a launch-window metric: only PRIMARY coverage of the announcement is scored.
+  // follow-up / development coverage (advances the saga) is shown but never counted as "missed".
+  const isFollow=n=>n.amec.coverage==='followup'||n.amec.coverage==='new_event';
+  const assessed=news.filter(n=>!n.amec.headline_only && n.amec.relevant!==false && !isFollow(n));
+  const HO=news.filter(n=>n.amec.headline_only).length;
+  const excluded=news.filter(n=>!n.amec.headline_only && n.amec.relevant===false).length;
+  const followup=news.filter(n=>!n.amec.headline_only && n.amec.relevant!==false && isFollow(n)).length;
+  const A=assessed.length, M=news.length;
+  const perMsg=km.map((m,i)=>({i:i+1,msg:m,carried:assessed.filter(n=>(n.amec.hits||[]).includes(i+1)).length}));
+  const critical=assessed.filter(n=>n.amec.stance==='critiques'||n.amec.tone==='unfavourable').length;
+  let verdict='Not assessed',v='amber';
+  if(A){ const minFrac=Math.min(...perMsg.map(p=>p.carried/A)); const critShare=critical/A;
+    if(critShare>0.5){verdict='Off message';v='red';}            // majority of outlets critical/unfavourable
+    else if(minFrac<0.5){verdict='Message gap';v='red';}          // a key message largely not carried
+    else if(minFrac<0.8){verdict='Partial delivery';v='amber';}   // some under-delivery
+    else if(critical>=1){verdict='Delivered, with pushback';v='amber';} // messages landed but ≥1 outlet pushed back
+    else {verdict='On message';v='green';} }                      // full delivery, no pushback
+  return {verdict,v,perMsg,A,M,HO,excluded,followup,critical};
+}
+// Plain-English summary of the message-delivery measurement (replaces cryptic per-message chips).
+function medGapSummary(am){
+  const A=am.A; const N=am.perMsg.length;
+  const clip=(s,n)=>{s=String(s||'').trim();return s.length>(n||64)?s.slice(0,(n||64)-1)+'…':s;};
+  if(!A) return 'No on-topic coverage to assess — message delivery not measured.';
+  const weak=am.perMsg.filter(p=>p.carried<A).sort((a,b)=>a.carried-b.carried);
+  const full=am.perMsg.filter(p=>p.carried===A);
+  let parts=[];
+  if(!weak.length){
+    parts.push(`All ${N} of the official's key message${N!==1?'s':''} were carried by every one of the ${A} outlet${A!==1?'s':''} covering the announcement${am.critical?'':' — the message landed in full'}.`);
+  } else {
+    const wtxt=weak.slice(0,2).map(p=>`message ${p.i} ("${clip(p.msg,56)}") reached only ${p.carried} of ${A}`).join('; ');
+    const lead= full.length ? `${full.length} of the ${N} key messages were carried by all ${A} outlet${A!==1?'s':''}, but ` : `Of ${N} key messages, `;
+    parts.push(`Across the ${A} outlet${A!==1?'s':''} covering the announcement, ${lead}${wtxt}${weak.length>2?`, with ${weak.length-2} other(s) also short`:''}.`);
+  }
+  if(am.critical) parts.push(`${am.critical} outlet${am.critical!==1?'s':''} questioned or critiqued the official framing.`);
+  const aside=[]; if(am.excluded) aside.push(`${am.excluded} off-event`); if(am.followup) aside.push(`${am.followup} follow-up`); if(am.HO) aside.push(`${am.HO} headline-only`);
+  if(aside.length) parts.push(`(${aside.join(' and ')} ${aside.length===1&&am.excluded===1?'article':'articles'} set aside — see Sources.)`);
+  return parts.join(' ');
+}
 function gapPane(label,off,otherSent,otherN,gp){
   const head=`Official ↔ ${label}`;
   if(!off){
@@ -343,8 +395,11 @@ function gapPane(label,off,otherSent,otherN,gp){
   const oc=toneCol(num(off.sent)), tc=toneCol(num(otherSent));
   const vcap=gp.verdict==='divergence'?'far from the official tone':gp.verdict==='favourable'?'warmer than the official tone':gp.verdict==='divided'?'mean near official, but opinion is split':'close to the official tone';
   const sideTone=num(otherSent)<=-0.15?'negative':num(otherSent)>=0.15?'positive':'neutral';
-  return `<div class="lane gpane"><h5>${head} <span class="vb ${gp.v}">${gp.verdict}</span><span class="ghead">Gap ${dist.toFixed(2)}</span></h5>`
-    +`<div class="gapcap">Tone ${sideTone} (${fmtSent(otherSent)}) · gap ${dist.toFixed(2)} from official ${fmtSent(off.sent)} = <b>${gp.verdict}</b> (${vcap})</div>`
+  const am=gp.amec;
+  const deliv = am ? `<div class="gapcap" style="color:var(--ink);line-height:1.5">${medGapSummary(am)}</div>` : '';
+  return `<div class="lane gpane"><h5>${head} <span class="vb ${gp.v}">${gp.verdict}</span>${am?'':`<span class="ghead">Gap ${dist.toFixed(2)}</span>`}</h5>`
+    + deliv
+    +`<div class="gapcap"${am?' style="color:var(--mut);margin-top:4px"':''}>${am?'Tone (secondary): ':'Tone '}${sideTone} (${fmtSent(otherSent)}) · ${dist.toFixed(2)} from official ${fmtSent(off.sent)}${am?'':` = <b>${gp.verdict}</b> (${vcap})`}</div>`
     +`<div class="gtrack"><div class="gbase"></div><div class="gzero"></div>`
     +`<div class="gspan" style="left:${lo}%;width:${w}%"></div>`
     +`<i class="gdot" style="left:${ox}%;background:${oc}" title="Official ${fmtSent(off.sent)}"></i>`
@@ -386,6 +441,16 @@ function sidesHTML(s,tldr){
 // Lifecycle-status icon (TL;DR Issues rows): sprout=emerging, pulse=active, moon=quiet — colours match the status palette.
 const STAT_ICON={emerging:['sprout','var(--amber)'],active:['activity','var(--accent)'],quiet:['moon','var(--mut)']};
 function statusIcon(st){const m=STAT_ICON[st];if(!m)return '';const lbl=st.charAt(0).toUpperCase()+st.slice(1);return `<span class="statico" style="color:${m[1]}" title="${lbl}" aria-label="${lbl}">${ICON[m[0]]}</span>`;}
+// 1A assembly state: leg dots (Official/Media/Public present) + state chip (Detected→Tracing→Gathering→Complete).
+// Official is NOT a gathered leg — it exists only if the authority speaks (own channel or via media);
+// for external-signal (B) issues it may never come, and its absence is a finding (silence), not "missing".
+// So the official dot just reports issued/silent, and completeness is judged on the reception legs (media+public).
+function legDots(s){const d=(on,onT,offT,c)=>`<span title="${on?onT:offT}" style="color:${on?c:'var(--line)'};font-size:9px;line-height:1">●</span>`;return `<span style="display:inline-flex;gap:2px;align-items:center">${d((s.official_n||0)>0,'Official: issued','Official: silent — no line issued (external signal)','var(--accent)')}${d((s.media_n||0)>0,'Media: in','Media: none yet','var(--ink)')}${d((s.public_n||0)>0,'Public: in','Public: none yet','var(--mut)')}</span>`;}
+// Show a chip ONLY while an issue is still assembling reception (media OR public present, not both yet,
+// or actively tracing). Complete (both in) and Cooling are not flagged. Official is its own dot.
+function asmState(s){const med=(s.media_n||0)>0,pub=(s.public_n||0)>0;if(med&&pub)return null;if(s.trace_status==='cooling')return null;if(med||pub||s.trace_status==='tracing')return{k:'In progress',c:'var(--amber)',p:s.trace_status==='tracing'?1:0};return null;}
+function asmChip(s){const a=asmState(s);if(!a)return '';const pz=a.p?`<span class="tpz" style="width:6px;height:6px;border-radius:50%;background:${a.c};display:inline-block"></span> `:'';return `<span title="Still assembling — reception (media + public) not all in yet" style="display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;border:1px solid ${a.c};color:${a.c}">${pz}${a.k} ${legDots(s)}</span>`;}
+function traceLine(s){return ((s.trace_status==='tracing'||s.trace_status==='cooling')&&s.trace_msg)?`<div class="meta" style="color:var(--accent);margin-top:2px">⟳ ${s.trace_msg}</div>`:'';}
 function storyRow(s,kind){
   const da=kind==='news'?`data-media="${encodeURIComponent(s.id)}"`:`data-story="${encodeURIComponent(s.id)}"`;
   // Issues list: show only the top topic chip by default; a "+N" button reveals the rest (non-TL;DR rows).
@@ -396,9 +461,10 @@ function storyRow(s,kind){
   const sc=s.status==='active'?'var(--accent)':s.status==='emerging'?'var(--amber)':'var(--mut)';
   const stat=(kind!=='news'&&s.status)?`<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:4px;border:1px solid ${sc};color:${sc}">${s.status}</span>`:'';
   const statIc=(kind!=='news'&&s.status)?statusIcon(s.status):'';
-  if(TLDR)return `<div class="row tldrrow" ${da}><span class="dot d-${s.rag}"></span><div class="tldrbody"><div class="tldrtop"><span class="t">${s.title}</span>${statIc}</div><span class="meta" style="margin:4px 0 0">${sidesHTML(s,true)}</span></div><span class="chev">›</span></div>`;
+  const tpz=(kind!=='news'&&s.trace_status==='tracing')?' <span class="tpz" style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;vertical-align:middle" title="Tracing"></span>':'';
+  if(TLDR)return `<div class="row tldrrow" ${da}><span class="dot d-${s.rag}"></span><div class="tldrbody"><div class="tldrtop"><span class="t">${s.title}</span>${statIc}${tpz}</div><span class="meta" style="margin:4px 0 0">${sidesHTML(s,true)}</span></div><span class="chev">›</span></div>`;
   const cta=kind==='news'?'Coverage ›':'Details ›';
-  return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="t">${s.title}</span>${stat}</div><div class="c" style="display:flex;flex-wrap:wrap;gap:4px;margin:3px 0">${tagHtml||'—'}</div><div class="meta">${sidesHTML(s,false)} · last ${s.last}</div></div><span class="chev">${cta}</span></div>`;
+  return `<div class="row" ${da}><span class="dot d-${s.rag}"></span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="t">${s.title}</span>${stat}${kind!=='news'?asmChip(s):''}</div><div class="c" style="display:flex;flex-wrap:wrap;gap:4px;margin:3px 0">${tagHtml||'—'}</div><div class="meta">${sidesHTML(s,false)} · last ${s.last}</div></div><span class="chev">${cta}</span></div>`;
 }
 const STAT_ORD={active:0,emerging:1,quiet:2};
 // gap of a side vs the official tone; null (side or official missing) sorts last
@@ -509,6 +575,8 @@ async function openDetail(topic,kind){
   document.getElementById("ov").classList.add("on");
   if(window.gtag)gtag('event',kind==='story'?'story_open':'issue_open',{topic:kind==='story'?topic:codeOf(topic)});
   let d;try{d=kind==='story'?await rpc('get_public_story_detail',{p_story_id:topic,p_from:RANGE.from,p_to:RANGE.to}):await rpc('get_public_topic_detail',{p_topic:topic,p_from:RANGE.from,p_to:RANGE.to});}catch(e){document.getElementById("detail").innerHTML='<div class="onreq">Could not load detail: '+e.message+'</div>';return;}
+  // Option 2: the issue detail page ignores the global TL;DR (always full). Restored before the function returns.
+  const _tldr=TLDR; TLDR=false;
   const off=d.official, sm=d.summary||{};
   // Unverified official lines (source 'unknown' / missing) drive the GAP but are NOT displayed.
   const offHide=!!off&&(!off.src||String(off.src).toLowerCase()==='unknown'); const offShow=!!off&&!offHide;
@@ -554,7 +622,7 @@ async function openDetail(topic,kind){
   // render a summary as point form when it is line-separated (Label — text per line); single-line summaries stay as a paragraph
   const sumPoints=(txt)=>{const parts=String(txt||'').split(/\n+/).map(s=>s.trim()).filter(Boolean); if(parts.length<=1) return `<p>${txt||''}</p>`; return `<ul style="margin:5px 0 2px;padding-left:16px;font-size:12.5px;line-height:1.5">${parts.map(p=>{const i=p.indexOf('—');return (i>0&&i<30)?`<li style="margin:0 0 6px"><b>${p.slice(0,i).trim()}</b> — ${p.slice(i+1).trim()}</li>`:`<li style="margin:0 0 6px">${p}</li>`;}).join('')}</ul>`;};
   // public variant: colours sentiment labels + injects % from total (ptot)
-  const sumPointsPub=(txt,tot)=>{const parts=String(txt||'').split(/\n+/).map(s=>s.trim()).filter(Boolean); if(parts.length<=1) return `<p>${txt||''}</p>`; return `<ul style="margin:5px 0 2px;padding-left:16px;font-size:12.5px;line-height:1.5">${parts.map(p=>{const i=p.indexOf('—');if(i>0&&i<30){let lbl=p.slice(0,i).trim(); const body=p.slice(i+1).trim(); if(tot>0) lbl=lbl.replace(/^(Negative|Neutral|Positive)\s*\((\d+)\)$/i,(_,w,n)=>`${w} (${n} · ${Math.round(Number(n)/tot*100)}%)`); const col=/^neg/i.test(lbl)?'var(--red)':/^pos/i.test(lbl)?'var(--green)':/^neu/i.test(lbl)?'var(--amber)':null; const st=col?` style="color:${col}"`:''; return `<li style="margin:0 0 6px"><b${st}>${lbl}</b> — ${body}</li>`;} return `<li style="margin:0 0 6px">${p}</li>`;}).join('')}</ul>`;};
+  const sumPointsPub=(txt,tot)=>{const parts=String(txt||'').split(/\n+/).map(s=>s.trim()).filter(Boolean); if(parts.length<=1) return `<p>${txt||''}</p>`; return `<ul style="margin:5px 0 2px;padding-left:16px;font-size:12.5px;line-height:1.5">${parts.map(p=>{const i=p.indexOf('—');if(i>0&&i<30){let lbl=p.slice(0,i).trim(); const body=p.slice(i+1).trim(); if(tot>0) lbl=lbl.replace(/^(Negative|Neutral|Positive)\s*\((\d+)\)$/i,(_,w,n)=>`${w} ${n} (${Math.round(Number(n)/tot*100)}%)`); const col=/^neg/i.test(lbl)?'var(--red)':/^pos/i.test(lbl)?'var(--green)':/^neu/i.test(lbl)?'var(--amber)':null; const st=col?` style="color:${col}"`:''; return `<li style="margin:0 0 6px"><b${st}>${lbl}</b> — ${body}</li>`;} return `<li style="margin:0 0 6px">${p}</li>`;}).join('')}</ul>`;};
   const medBox=d.media_n>0?`${sm.med?sumPoints(sm.med):`<p>${d.media_n} media item${d.media_n>1?'s':''} — ${moodWord(d.med_sent)} tone overall (see Sources).</p>`}<div class="stance">${d.media_n} item${d.media_n>1?'s':''} · ${moodWord(d.med_sent)}</div>`:`<p>No media coverage in this window.</p>`;
   // distribution-aware mood: 'Mixed' unless one sentiment is a clear majority (>=55%) — avoids labelling a spread (e.g. 34/20/12) as flatly Negative
   const distMood=(P,U,G)=>{const T=P+U+G; if(!T) return moodWord(d.pub_sent); const mx=Math.max(P,U,G); let w='Mixed',c='var(--amber)'; if(mx/T>=0.55){ if(G===mx){w='Negative';c='var(--red)';} else if(P===mx){w='Positive';c='var(--green)';} } return `<span style="color:${c}">${w}</span>`;};
@@ -581,6 +649,7 @@ async function openDetail(topic,kind){
     return {t:`<b>Official ↔ ${label} — ${verdict}:</b> ${detail}`,short,v:vv,verdict,detail:TLDR?(short.replace(/<\/?b>/g,'')):detail};
   };
   const gPub=gapPair('Public',d.public_n,d.pub_sent,sm.gap_pub,sm.kw_pub,pubDist), gMed=gapPair('Media',d.media_n,d.med_sent,sm.gap_med,sm.kw_med,medDist);
+  const _medAm=medAmecComposite(d); if(_medAm){ gMed.amec=_medAm; gMed.verdict=_medAm.verdict; gMed.v=_medAm.v; }
   // Sub-score breakdowns under each gap card (full mode). Public → by sentiment bucket (from quotes); Media → by outlet, grouped mainstream/non-mainstream (from news).
   if(off){
     const vbCalc=avg=>{const g=gapDir(off.sent,avg);return {verdict:g.adverse?'divergence':g.favourable?'favourable':'aligned',vv:g.adverse?'red':g.favourable?'amber':'green',d:g.absd};};
@@ -599,24 +668,68 @@ async function openDetail(topic,kind){
         +`<i class="gdot" style="left:${oX}%;background:${oC}" title="Official ${fmtSent(off.sent)}"></i>`
         +`<i class="gdot" style="left:${bX}%;background:${c}" title="${lbl} avg ${fmtSent(avg)}"></i></div>`
         +`<div class="subwhy">${gapWhy(avg,r)}</div>`+`</div>`;}).join(''):'';
-    if(pubRows)gPub.sub=`<details class="subg"><summary>Details</summary><div class="subnote">Each row is one group of voices — how far its average tone sits from the official tone (${fmtSent(off.sent)}). It shows that group's gap, not a sentiment score.</div>${pubRows}</details>`;
+    if(pubRows)gPub.sub=`<details class="subg"><summary>Show full breakdown</summary><div class="subnote">Each row is one group of voices — how far its average tone sits from the official tone (${fmtSent(off.sent)}). It shows that group's gap, not a sentiment score.</div>${pubRows}</details>`;
     const isMain=u=>/channelnewsasia|straitstimes|zaobao|8world|todayonline|asiaone|businesstimes|beritaharian|tamilmurasu|mediacorp/i.test(u||'');
     const outletOf=u=>{try{return u.split('//')[1].split('/')[0].replace(/^www\./,'');}catch(e){return 'source';}};
-    const ns=(d.news||[]).filter(n=>n.sc!=null);
+    // gap per-outlet rows exclude off-event outlets (amec.relevant===false) — those stay under Sources only.
+    const ns=(d.news||[]).filter(n=>n.sc!=null && !(n.amec&&n.amec.relevant===false));
     // media per-outlet "why" EXPLAINS THE GAP: how the outlet's coverage tone (framing) sits vs the official line — not a bare headline.
-    const medGapWhy=(n,r)=>{const sc=num(n.sc);const hl=n.t?` (“${clip(n.t,60)}”)`:'';
-      if(r.verdict==='divergence') return `Coverage tone ${fmtSent(sc)} sits ${r.d.toFixed(2)} ${sc<num(off.sent)?'below':'above'} the ${offW} official line (${fmtSent(off.sent)}) — the framing leans ${sc<num(off.sent)?'to concern/caution':'positive'}${hl}, reading ${sc<num(off.sent)?'more cautionary than':'warmer than'} the official message (framing, not stance).`;
-      if(r.verdict==='favourable') return `Coverage tone ${fmtSent(sc)} is warmer than the ${offW} official line${hl}.`;
-      return `Coverage tone ${fmtSent(sc)} is within ${r.d.toFixed(2)} of the official line — broadly tracks the official framing${hl}.`;};
+    // Plain-language gap explanation: what the framing difference MEANS for the reader. No raw numbers
+    // (they're in the row header), no headline quote. Explains the gap, doesn't restate the coverage.
+    const medGapWhy=(n,r)=>{const sc=num(n.sc),o=num(off.sent);
+      if(r.verdict==='divergence'){
+        if(Math.abs(sc)<=0.15) return `Reported the event in a neutral, factual tone — informative coverage rather than echoing the ${offW} official line's warmth, so the gap is one of emphasis, not concern.`;
+        return sc<o
+          ? `Covered the event more critically than the ${offW} official line — its framing leaned to concern rather than the official's reassurance.`
+          : `Covered the event more positively than the ${offW} official line.`;}
+      if(r.verdict==='favourable') return `Warmer than the ${offW} official line — this outlet's framing leans more positive than the official message.`;
+      return `In step with the ${offW} official line — this outlet's framing broadly matches the official tone, so little gap to flag.`;};
+    // short tone tag appended after the per-outlet gist (the gist carries the substance/message)
+    const medGapTag=(n,r)=>{const sc=num(n.sc),o=num(off.sent);
+      if(r.verdict==='divergence'){ if(Math.abs(sc)<=0.15) return 'neutral, factual coverage — less upbeat than the official tone'; return sc<o?'more critical in tone than the official line':'more positive in tone than the official line'; }
+      if(r.verdict==='favourable') return 'warmer in tone than the official line';
+      return 'in step with the official tone';};
+    const amChip=(txt,c,tip)=>`<span title="${(tip||'').replace(/"/g,'&quot;')}" style="font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;border:1px solid ${c};color:${c};white-space:nowrap;cursor:default">${txt}</span>`;
+    const amBar=a=>{const tc=a.tone==='favourable'?'var(--green)':a.tone==='unfavourable'?'var(--red)':'var(--mut)';const tl=a.tone?a.tone[0].toUpperCase()+a.tone.slice(1):'Neutral';const sl=a.stance?a.stance[0].toUpperCase()+a.stance.slice(1):'';
+      const km=d.key_msgs||[],hits=a.hits||[];
+      const carried=hits.map(i=>km[i-1]?`${i}. ${km[i-1]}`:`#${i}`).join(' · ');
+      const missed=km.map((m,i)=>i+1).filter(i=>!hits.includes(i)).map(i=>`${i}. ${km[i-1]}`).join(' · ');
+      const mtip=`This outlet carried ${hits.length} of the official's ${a.n} key messages.${carried?'  ✓ Carried: '+carried+'.':''}${missed?'  ✗ Missed: '+missed+'.':''}`;
+      return amChip(tl,tc,`Coverage tone: ${tl.toLowerCase()}.`)+(a.n>0?amChip(`${hits.length} of ${a.n} key messages`,'var(--accent)',mtip):'')+(sl?amChip(sl,'var(--mut)',`Framing / stance: ${sl.toLowerCase()}.`):'');};
     const medRow=n=>{const sc=num(n.sc);const r=vbCalc(sc);const bX=pctX(sc),lo=Math.min(bX,oX),w=Math.max(2,Math.abs(bX-oX));
-      return `<div class="gbk"><div class="gbk-top"><span class="gbk-lab">${outletOf(n.u)}</span><span class="gbk-n">${fmtSent(sc)}</span><span class="vb ${r.vv}">${r.verdict}</span><span class="gbk-gap">Gap ${r.d.toFixed(2)}</span></div>`
+      const onm=(n.outlet&&n.outlet!=='News')?n.outlet:(/news\.google\./i.test(n.u||'')?'via Google News':outletOf(n.u));
+      const lab=`<span class="gbk-lab">${n.u?`<a href="${n.u}" target="_blank" rel="noopener" class="lnk">${onm} ↗</a>`:onm}</span>`;
+      if(n.amec){const a=n.amec,km=d.key_msgs||[],hits=a.hits||[],missed=(a.n||0)-hits.length;
+        const isFollow=a.coverage==='followup'||a.coverage==='new_event';
+        const tc=a.tone==='favourable'?'var(--green)':a.tone==='unfavourable'?'var(--red)':'var(--mut)';
+        const tl=a.tone?a.tone[0].toUpperCase()+a.tone.slice(1):'Neutral';
+        const sl=a.stance?a.stance[0].toUpperCase()+a.stance.slice(1):'';
+        let gv,gc;
+        if(isFollow){gv='Follow-up';gc='var(--mut)';}            // saga development — not scored for message delivery
+        else if(a.headline_only){gv='Headline only';gc='var(--mut)';}
+        else if(a.tone==='unfavourable'||a.stance==='critiques'){gv='Off message';gc='var(--red)';}
+        else if((a.n||0)>0){ if(missed<=0){gv='On message';gc='var(--green)';} else if(missed===1){gv='Minor gap';gc='var(--amber)';} else {gv=missed+' missed';gc='var(--red)';} }
+        else {gv='Aligned';gc='var(--green)';}
+        const pills=(km.length&&!isFollow)?km.map((m,i)=>{const got=hits.includes(i+1);if(a.headline_only&&!got)return '';const c=got?'var(--green)':'var(--red)';const ev=(got&&a.ev&&a.ev[String(i+1)])?' — “'+String(a.ev[String(i+1)])+'”':'';const tip=((got?'Carried: ':'Did NOT land: ')+String(m)+ev).replace(/"/g,'&quot;');return `<span title="${tip}" style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;border:1px solid ${c};color:${c};white-space:nowrap;cursor:default">${got?'✓':'✗'} ${i+1}</span>`;}).join(' '):'';
+        return `<div class="gbk"><div class="gbk-top">${lab}<span class="gbk-gap" style="color:${gc}">${gv}</span></div>`
+          +(n.t?`<div style="font-size:11.5px;color:var(--ink);font-weight:600;margin:4px 0 0;line-height:1.4">${clip(n.t,120).replace(/</g,'&lt;')}</div>`:'')
+          +`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0 0"><span style="font-size:10px;color:var(--mut);font-weight:600">Tone</span>${amChip(tl,tc,'Coverage tone: '+tl.toLowerCase()+'.')}</div>`
+        +(sl?`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:5px 0 0"><span style="font-size:10px;color:var(--mut);font-weight:600">Stance</span>${amChip(sl,'var(--mut)','Framing / stance: '+sl.toLowerCase()+'.')}</div>`:'')
+          +((pills||a.headline_only||isFollow)?`<div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:6px 0 0"><span style="font-size:10px;color:var(--mut);font-weight:600">Key messages</span>${pills}${a.headline_only?`<span style="font-size:10px;color:var(--mut);font-style:italic">headline only — body not captured, not fully assessed</span>`:''}${isFollow?`<span style="font-size:10px;color:var(--mut);font-style:italic">follow-up coverage — not scored for message delivery</span>`:''}</div>`:'')
+          +(n.g?`<div class="subwhy"><span style="color:var(--ink)">${n.g}</span></div>`:'')+`</div>`;}
+      return `<div class="gbk"><div class="gbk-top">${lab}<span class="gbk-n">${fmtSent(sc)}</span><span class="vb ${r.vv}">${r.verdict}</span><span class="gbk-gap">Gap ${r.d.toFixed(2)}</span></div>`
         +`<div class="gtrack mini"><div class="gbase"></div><div class="gzero"></div><div class="gspan" style="left:${lo}%;width:${w}%"></div>`
         +`<i class="gdot" style="left:${oX}%;background:${oC}" title="Official ${fmtSent(off.sent)}"></i>`
         +`<i class="gdot" style="left:${bX}%;background:${toneCol(sc)}" title="${outletOf(n.u)} ${fmtSent(sc)}"></i></div>`
-        +`<div class="subwhy">${medGapWhy(n,r)}</div>`+`</div>`;};
-    const medTier=t=>{const arr=ns.filter(n=>isMain(n.u)===(t==='Mainstream'));return arr.length?`<div class="subtier">${t}</div>`+arr.sort((a,b)=>num(a.sc)-num(b.sc)).map(medRow).join(''):'';};
-    const medRows=ns.length?medTier('Mainstream')+medTier('Non-mainstream'):'';
-    if(medRows)gMed.sub=`<details class="subg"><summary>Details</summary>${medRows}</details>`;
+        +`<div class="subwhy">${n.g?`<span style="color:var(--ink)">${n.g}</span> <span style="color:var(--mut)">— ${medGapTag(n,r)}.</span>`:medGapWhy(n,r)}</div>`+`</div>`;};
+    // two tiers only: Mainstream (SPH/Mediacorp owned) vs Non-mainstream (everything else).
+    const tierOf=n=>isMain(n.u)?'Mainstream':'Non-mainstream';
+    const isFollowN=n=>n.amec&&(n.amec.coverage==='followup'||n.amec.coverage==='new_event');
+    const MEDTIERS=['Mainstream','Non-mainstream'];
+    const medTier=(grp,t)=>{const arr=grp.filter(n=>tierOf(n)===t);return arr.length?`<div class="subtier">${t}</div>`+arr.sort((a,b)=>num(a.sc)-num(b.sc)).map(medRow).join(''):'';};
+    const medGroup=(label,grp)=>grp.length?`<div class="subgroup">${label}</div>`+MEDTIERS.map(t=>medTier(grp,t)).join(''):'';
+    const medRows=ns.length?medGroup('Primary coverage',ns.filter(n=>!isFollowN(n)))+medGroup('Follow-up coverage',ns.filter(n=>isFollowN(n))):'';
+    if(medRows){const km=(d.key_msgs&&d.key_msgs.length)?`<div class="subnote" style="margin-bottom:8px"><b>Official key messages</b> ${info('How this is measured: each outlet&#39;s coverage is read for three things — Tone (favourable / neutral / unfavourable), Key messages (how many of the official&#39;s key points the coverage carried, i.e. message pull-through), and Stance (report / context / questions / endorses / critiques). The per-outlet gap reflects pull-through and tone: On message = all carried and on-tone; Minor gap = one message missed; N missed / Off message = more dropped or critical. A qualitative, model-judged AMEC-style read — reviewable, not human-coded audited counts.')}<div style="margin-top:6px">${d.key_msgs.map((k,i)=>`<div style="display:flex;gap:7px;align-items:flex-start;margin:4px 0"><span style="flex-shrink:0;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;border:1px solid var(--accent);color:var(--accent)">${i+1}</span><span style="font-size:12px;line-height:1.45">${String(k).replace(/</g,'&lt;')}</span></div>`).join('')}</div></div>`:'';gMed.sub=`<details class="subg"><summary>Show full breakdown</summary>${km}${medRows}</details>`;}
   }
   let v,verdict;
   if(!off){v='amber';verdict='no official line';}
@@ -674,11 +787,13 @@ async function openDetail(topic,kind){
     <div class="lanes"><div class="lane off ${off?'':'empty'}"><h5><span class="ic">${ICON.landmark}</span>Official</h5>${oB}</div><div class="lane med ${d.media_n>0?'':'empty'}"><h5><span class="ic">${ICON.news}</span>Media</h5>${mB}</div><div class="lane pub"><h5><span class="ic">${ICON.users}</span>Public</h5>${pB}</div></div>
     ${off?`<div class="dsec">The gap ${info("Each dot is the tone of what that side actually said, on a negative→positive scale. The Official dot reflects the tone of the official message itself — a warning, advisory or enforcement action sits on the negative side because the message is cautionary, not a mark against the issuing body. 'Divergence' means a side differs from the official tone by more than 0.3; 'aligned' means they are close. So an official warning that the public also takes negatively is aligned — the public shares the concern and the message landed. The gap to watch is the official tone positive but the public negative, or the reverse. Sentiment is a qualitative read, not a precise measure.")}</div>
     <div class="gapclar">Gap = how far each side's tone sits from the official tone — <b>not the sentiment itself</b>. <b>Aligned</b> = close · <b>Divergence</b> = far · <b>Divided</b> = mean is close but opinion is split (both sides ≥25%). (A negative audience that shares the official's concern still reads <i>aligned</i>.)</div>
-    ${TLDR?`<div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;line-height:1.8">${gapTldrLine}</div>`:`<div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`}`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div>${sm.gap_pub||sm.gap_med?`<div class="gap2">${sm.gap_pub?`<div class="lane gpane"><h5>Official ↔ Public</h5><p style="font-size:12px;color:var(--fg)">${sm.gap_pub}</p></div>`:''}${sm.gap_med?`<div class="lane gpane"><h5>Official ↔ Media</h5><p style="font-size:12px;color:var(--fg)">${sm.gap_med}</p></div>`:''}</div>`:`<div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}`}
+    ${TLDR?`<div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;line-height:1.8">${gapTldrLine}</div>`:`<div class="gap2">${gapPane('Public',off,d.pub_sent,d.public_n,gPub)}${gapPane('Media',off,d.med_sent,d.media_n,gMed)}</div>`}`:`<div class="dsec">Reception ${info("This is an external-trigger story (no official line yet), so there is no gap to assess. The public and media reception are shown as standalone signals.")}</div>${sm.gap_pub||sm.gap_med?`<div class="gap2">${sm.gap_pub?`<div class="lane gpane"><h5>Official ↔ Public</h5><p style="font-size:12px;color:var(--fg)">${naLine(sm.gap_pub)}</p></div>`:''}${sm.gap_med?`<div class="lane gpane"><h5>Official ↔ Media</h5><p style="font-size:12px;color:var(--fg)">${naLine(sm.gap_med)}</p></div>`:''}</div>`:`<div class="gapsum" style="border:1px solid var(--barbg);border-radius:10px;padding:12px;font-size:13px;color:var(--mut)">No official line captured — external signal (trigger B). There is no official message to measure a gap against; the public and media reception above stand on their own.</div>`}`}
     ${verb}
-    ${amec}
     <div class="meta" style="margin-top:16px;border-top:1px solid var(--barbg);padding-top:8px">${kind==='story'&&d.trig?'Trigger '+d.trig+(facetLine(d)?' · ':''):''}${facetLine(d)?'Facets — '+facetLine(d):''}</div>`;
+  TLDR=_tldr; // restore global TL;DR for the list/board
 }
+// Collapse an "insufficient / no official position" gap line to a simple —NA— marker (keeps the header, drops the long sentence)
+function naLine(t){const s=(t||'').toString().trim();if(!s||/^(insufficient|none|n\/?a|no official|not enough|no data|unable)/i.test(s))return '<span style="color:var(--mut)">—NA—</span>';return s;}
 function closeDetail(){document.getElementById("ov").classList.remove("on");closeShareMenu();if(getHashIssue()||getHashStory()||getHashNews())history.replaceState(null,'',location.pathname+location.search);}
 function openByKind(id,kind){return kind==='media'?openMedia(id):openDetail(id,kind);}
 async function openMedia(id){
