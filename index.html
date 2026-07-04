@@ -1,234 +1,55 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Archive — Social Sensing</title>
-  <link rel="stylesheet" href="assets/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Page closed</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1c2230; --mut:#5d6675; --dim:#9aa3b2;
+    --line:#e4e7ec; --accent:#3b5bdb; --accbg:#eef2ff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0e1014; --card:#171a21; --ink:#e8eaed; --mut:#9aa3b2; --dim:#6b7280;
+           --line:#2a2f3a; --accent:#8aa4ff; --accbg:#1a2030; }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:40px 36px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.06)}
+  .badge{width:56px;height:56px;border-radius:14px;background:var(--accbg);color:var(--accent);
+    display:inline-flex;align-items:center;justify-content:center;margin-bottom:22px}
+  .badge svg{width:28px;height:28px}
+  h1{font-size:22px;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+  p{margin:0 0 14px;color:var(--mut);font-size:15px}
+  p.lead{color:var(--ink);font-size:16px}
+  .divider{height:1px;background:var(--line);margin:24px 0}
+  .contact{font-size:14px;color:var(--mut)}
+  .contact a{color:var(--accent);text-decoration:none;font-weight:600}
+  .contact a:hover{text-decoration:underline}
+  .foot{margin-top:26px;font-size:12px;color:var(--dim)}
+</style>
 </head>
 <body>
-
-  <div class="top-stripe"></div>
-
-  <header class="site-header">
-    <div class="container">
-      <a href="index.html" class="site-title">Social Sensing</a>
-      <nav>
-        <a href="index.html" aria-current="page">Archive</a>
-        <a href="about.html">Methodology</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container archive">
-
-    <header class="archive-header">
-      <h1>Archive</h1>
-      <p class="subtitle">Sensing digests across regulated domains in Singapore tech and media.</p>
-    </header>
-
-    <div class="archive-controls">
-      <input type="search"
-             id="archive-search"
-             class="archive-search"
-             placeholder="Search digests by date, cluster, sentiment tag, or summary…"
-             autocomplete="off"
-             aria-label="Search archive">
-
-      <div class="filter-row" data-filter-group="cluster" role="tablist" aria-label="Filter by cluster">
-        <button type="button" class="filter-pill is-active" data-cluster="all" role="tab" aria-selected="true">
-          All <span class="pill-count">4</span>
-        </button>
-        <button type="button" class="filter-pill" data-cluster="ai-and-tech" role="tab" aria-selected="false">
-          AI &amp; tech <span class="pill-count">4</span>
-        </button>
-        <button type="button" class="filter-pill" data-cluster="telco" role="tab" aria-selected="false">
-          Telco <span class="pill-count">2</span>
-        </button>
-        <button type="button" class="filter-pill" data-cluster="online-safety" role="tab" aria-selected="false">
-          Online safety <span class="pill-count">3</span>
-        </button>
-        <button type="button" class="filter-pill" data-cluster="broadcast-media" role="tab" aria-selected="false">
-          Broadcast media <span class="pill-count">2</span>
-        </button>
-      </div>
-    </div>
-
-    <table class="archive-list" role="grid">
-      <thead>
-        <tr>
-          <th scope="col" class="col-date">Date / Time</th>
-          <th scope="col" class="col-cluster">Dominant cluster</th>
-          <th scope="col" class="col-sentiment">Sentiment</th>
-          <th scope="col" class="col-summary">Summary</th>
-        </tr>
-      </thead>
-      <tbody id="archive-rows">
-        <tr class="archive-row"
-            data-href="digests/2026-05-28-0800.html"
-            data-cluster="ai-and-tech telco online-safety"
-            data-sentiment="mostly-positive"
-            data-search="28 may 2026 08:00 sgt weekly ai tech nvidia openai mddi atx summit telco simba m1 imda online safety scam impersonation spf">
-          <td class="col-date">28 May 2026 · 08:00 SGT · Weekly</td>
-          <td class="col-cluster">AI &amp; tech</td>
-          <td class="col-sentiment"><span class="sentiment-tag tag-mostly-positive">Mostly positive · Loudest</span></td>
-          <td class="col-summary">ATx Summit's AI tailwinds shaped the window, set against Simba–M1 merger collapse and renewed government-impersonation scam alerts.</td>
-        </tr>
-        <tr class="archive-row"
-            data-href="digests/2026-05-27-1712.html"
-            data-cluster="telco ai-and-tech online-safety broadcast-media"
-            data-sentiment="mostly-negative"
-            data-search="27 may 2026 17:12 sgt weekly telco simba m1 merger imda atx openai mddi mou chief justice truth decay">
-          <td class="col-date">27 May 2026 · 17:12 SGT · Weekly</td>
-          <td class="col-cluster">Telco</td>
-          <td class="col-sentiment"><span class="sentiment-tag tag-mostly-negative">Mostly negative · Loudest</span></td>
-          <td class="col-summary">Simba–M1 merger collapsed after IMDA flagged a frequency-band breach, dominating an otherwise positive ATx Summit week.</td>
-        </tr>
-        <tr class="archive-row"
-            data-href="digests/2026-05-27-1700.html"
-            data-cluster="ai-and-tech broadcast-media"
-            data-sentiment="mostly-positive"
-            data-search="27 may 2026 17:00 sgt atx singapore openai applied ai lab agentic sandbox google punggol digital district physical ai testbed">
-          <td class="col-date">27 May 2026 · 17:00 SGT · ATx focus</td>
-          <td class="col-cluster">AI &amp; tech</td>
-          <td class="col-sentiment"><span class="sentiment-tag tag-mostly-positive">Mostly positive · Loudest</span></td>
-          <td class="col-summary">Asia Tech x Singapore 2026 generated positive discourse on LinkedIn and online press, centred on OpenAI Lab, Agentic AI Sandbox, and Punggol physical-AI testbeds.</td>
-        </tr>
-        <tr class="archive-row"
-            data-href="digests/2026-05-27-1635.html"
-            data-cluster="online-safety ai-and-tech"
-            data-sentiment="mostly-negative"
-            data-search="27 may 2026 16:35 sgt online safety chief justice truth decay pofma judicial independence agentic ai mgf framework">
-          <td class="col-date">27 May 2026 · 16:35 SGT</td>
-          <td class="col-cluster">Online safety</td>
-          <td class="col-sentiment"><span class="sentiment-tag tag-mostly-negative">Mostly negative · Loudest</span></td>
-          <td class="col-summary">Chief Justice Menon's "truth decay" speech drew critical Facebook commentary on POFMA; separate Twitter post praised MGF for Agentic AI.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p id="archive-empty" class="archive-empty" hidden>No results match your filters.</p>
-
-    <nav class="archive-pagination" aria-label="Archive pages">
-      <button type="button" id="page-newer" class="page-control" disabled>← Newer</button>
-      <span class="page-status" id="page-status">Page 1</span>
-      <button type="button" id="page-older" class="page-control">Older →</button>
-    </nav>
-
+  <main class="card" role="main">
+    <span class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="10.5" width="16" height="10" rx="2.5"/>
+        <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>
+      </svg>
+    </span>
+    <h1>This page has closed</h1>
+    <p class="lead">This page is no longer available at this address.</p>
+    <p>The service it hosted has been retired and moved to an upgraded platform. This location is no longer maintained or updated.</p>
+    <div class="divider"></div>
+    <p class="contact">For access or more information, please contact the owner of this site.
+      <!-- Optional: add a contact link, e.g. <a href="mailto:REPLACE_WITH_EMAIL">get in touch</a> -->
+    </p>
+    <p class="foot">Restricted &middot; access by arrangement only</p>
   </main>
-
-  <script>
-  (function () {
-    'use strict';
-
-    var PAGE_SIZE = 50;
-
-    var state = {
-      search: '',
-      cluster: 'all',
-      page: 1
-    };
-
-    var searchEl = document.getElementById('archive-search');
-    var rowsContainer = document.getElementById('archive-rows');
-    var emptyEl = document.getElementById('archive-empty');
-    var pageStatusEl = document.getElementById('page-status');
-    var newerBtn = document.getElementById('page-newer');
-    var olderBtn = document.getElementById('page-older');
-    var clusterRow = document.querySelector('[data-filter-group="cluster"]');
-
-    var allRows = Array.prototype.slice.call(rowsContainer.querySelectorAll('tr.archive-row'));
-
-    var params = new URLSearchParams(window.location.search);
-    var initialCluster = params.get('cluster');
-    if (initialCluster) {
-      state.cluster = initialCluster.toLowerCase();
-    }
-
-    function rowMatches(row) {
-      var searchOk = true;
-      if (state.search) {
-        var hay = (row.getAttribute('data-search') || '').toLowerCase();
-        searchOk = hay.indexOf(state.search) !== -1;
-      }
-
-      var clusterOk = true;
-      if (state.cluster !== 'all') {
-        var rowClusters = (row.getAttribute('data-cluster') || '').toLowerCase().split(/\s+/);
-        clusterOk = rowClusters.indexOf(state.cluster) !== -1;
-      }
-
-      return searchOk && clusterOk;
-    }
-
-    function render() {
-      var matching = allRows.filter(rowMatches);
-      var totalPages = Math.max(1, Math.ceil(matching.length / PAGE_SIZE));
-      if (state.page > totalPages) state.page = totalPages;
-
-      var startIdx = (state.page - 1) * PAGE_SIZE;
-      var endIdx = startIdx + PAGE_SIZE;
-      var visibleSet = new Set(matching.slice(startIdx, endIdx));
-
-      allRows.forEach(function (row) {
-        row.hidden = !visibleSet.has(row);
-      });
-
-      emptyEl.hidden = matching.length !== 0;
-      pageStatusEl.textContent = 'Page ' + state.page + ' of ' + totalPages +
-                                  ' (' + matching.length + ' digest' + (matching.length === 1 ? '' : 's') + ')';
-      newerBtn.disabled = state.page <= 1;
-      olderBtn.disabled = state.page >= totalPages;
-    }
-
-    function setActiveClusterPill(slug) {
-      var pills = clusterRow.querySelectorAll('.filter-pill');
-      pills.forEach(function (p) {
-        var match = (p.getAttribute('data-cluster') || '').toLowerCase() === slug;
-        p.classList.toggle('is-active', match);
-        p.setAttribute('aria-selected', match ? 'true' : 'false');
-      });
-    }
-    setActiveClusterPill(state.cluster);
-
-    if (searchEl) {
-      searchEl.addEventListener('input', function (e) {
-        state.search = (e.target.value || '').toLowerCase().trim();
-        state.page = 1;
-        render();
-      });
-    }
-
-    if (clusterRow) {
-      clusterRow.addEventListener('click', function (e) {
-        var pill = e.target.closest('.filter-pill');
-        if (!pill) return;
-        var slug = (pill.getAttribute('data-cluster') || 'all').toLowerCase();
-        state.cluster = slug;
-        state.page = 1;
-        setActiveClusterPill(slug);
-        render();
-      });
-    }
-
-    allRows.forEach(function (row) {
-      row.addEventListener('click', function () {
-        var href = row.getAttribute('data-href');
-        if (href) window.location.href = href;
-      });
-    });
-
-    newerBtn.addEventListener('click', function () {
-      if (state.page > 1) { state.page--; render(); }
-    });
-    olderBtn.addEventListener('click', function () {
-      state.page++;
-      render();
-    });
-
-    render();
-  })();
-  </script>
-
 </body>
 </html>

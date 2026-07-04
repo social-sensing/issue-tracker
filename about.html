@@ -1,137 +1,55 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Methodology — Social Sensing</title>
-  <link rel="stylesheet" href="assets/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Page closed</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --ink:#1c2230; --mut:#5d6675; --dim:#9aa3b2;
+    --line:#e4e7ec; --accent:#3b5bdb; --accbg:#eef2ff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0e1014; --card:#171a21; --ink:#e8eaed; --mut:#9aa3b2; --dim:#6b7280;
+           --line:#2a2f3a; --accent:#8aa4ff; --accbg:#1a2030; }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{width:100%;max-width:520px;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:40px 36px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.06)}
+  .badge{width:56px;height:56px;border-radius:14px;background:var(--accbg);color:var(--accent);
+    display:inline-flex;align-items:center;justify-content:center;margin-bottom:22px}
+  .badge svg{width:28px;height:28px}
+  h1{font-size:22px;margin:0 0 10px;font-weight:700;letter-spacing:-.01em}
+  p{margin:0 0 14px;color:var(--mut);font-size:15px}
+  p.lead{color:var(--ink);font-size:16px}
+  .divider{height:1px;background:var(--line);margin:24px 0}
+  .contact{font-size:14px;color:var(--mut)}
+  .contact a{color:var(--accent);text-decoration:none;font-weight:600}
+  .contact a:hover{text-decoration:underline}
+  .foot{margin-top:26px;font-size:12px;color:var(--dim)}
+</style>
 </head>
 <body>
-
-  <div class="top-stripe"></div>
-
-  <header class="site-header">
-    <div class="container">
-      <a href="index.html" class="site-title">Social Sensing</a>
-      <nav>
-        <a href="index.html">Archive</a>
-        <a href="about.html">Methodology</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container methodology">
-
-    <h1>Methodology</h1>
-    <p class="subtitle">How sensing digests are produced and governed.</p>
-
-    <h2 class="section-heading">What this site is</h2>
-    <p>Social Sensing is a personal sensing log tracking what is being said about Singapore tech, telco, and media policy — by whom, where, and how framed. Digests are produced as situational awareness only. They contain no strategy, no recommendations, no predictions, no official position of any organisation. Views and interpretations expressed in the digests are the author's, drawn from publicly observable social commentary and news reporting.</p>
-
-    <p>The site is publicly accessible. There is no access gate. Anyone with the URL can read every digest in the archive.</p>
-
-    <h2 class="section-heading">Schedule</h2>
-    <p>A digest is produced once each weekday morning at 08:00 SGT, covering the trailing 7-day window from the run time. The analyst may also fire manual runs on demand with a different cadence (e.g. a 24-hour catch-up window after a major event). The cadence and window for each digest are named in the page header and the footer methodology line.</p>
-
-    <p>The scheduled run only fires while the controlling desktop app is open. If closed at 08:00 SGT, the run lands on the next app launch. The system is best-effort, not guaranteed daily.</p>
-
-    <h2 class="section-heading">Data sources</h2>
-    <p>Data-source mode is hybrid by default. On every run the tool reads both available sources:</p>
-    <ol>
-      <li><strong>Analyst-supplied source.</strong> Files dropped into the inputs folder (CSV, TXT, PDF, DOCX, RTFD, or WEBARCHIVE) are read and filtered to the trailing window. This is typically a social-listening export carrying handles, engagement metrics, and content from platforms that the live web scan cannot reach (Reddit, behind-login content).</li>
-      <li><strong>Supplementary live web scan.</strong> The tool runs a search against an accessible subset of a hand-maintained whitelist of Singapore mainstream news, forums, government sites, and selected tech press. Results are filtered to items published within the window.</li>
-    </ol>
-
-    <p>The whitelist has a known structural blind spot: the web crawler used for live scanning is blocked from several high-value Singapore domains (the major mainstream titles and Reddit). Content from those domains can only enter a digest via the analyst-supplied export. The blocked-domain list is named in the footer of every digest so a reader can see what was structurally absent from the scan.</p>
-
-    <h2 class="section-heading">How digests are produced</h2>
-    <p>Each digest is generated with AI assistance. The tool reads the whitelist and the scan-terms configuration, runs the hybrid ingest above, clusters signal under the seven regulated domains (below), and writes the digest as an HTML page. The archive index is regenerated on every run. Each run is logged to an audit trail.</p>
-
-    <p>After each run, the new digest is committed and pushed to the GitHub repository that backs this site. GitHub Pages serves the contents publicly within minutes. There is no per-run human review before publication. If a digest is wrong, misleading, or based on a failed run, the analyst retracts it by renaming the file — the retracted file disappears from the archive on the next push but remains on disk for audit.</p>
-
-    <h2 class="section-heading">Topic taxonomy</h2>
-    <p>Clusters map to one of seven regulated domains in Singapore tech and media:</p>
-    <ul>
-      <li>AI and digital technology</li>
-      <li>Telecommunications</li>
-      <li>Online safety and scams</li>
-      <li>Broadcast media and content</li>
-      <li>Digital identity and data protection</li>
-      <li>Postal and digital services</li>
-      <li>Broadband and connectivity</li>
-    </ul>
-    <p>Anything outside these seven is out of scope and is dropped silently.</p>
-
-    <h2 class="section-heading">Editorial standards</h2>
-    <ul>
-      <li>British English. Plain English. Bullets, not paragraphs.</li>
-      <li>Sentiment is qualitative only. No percentages, no share-of-voice, no volume counts.</li>
-      <li>One verbatim quote per cluster maximum, under 15 words, always attributed.</li>
-      <li>Sources are linked to the original posts where the underlying export carries usable URLs. Closed or unlinkable channels are noted as such with platform-level counts — never fabricated.</li>
-      <li>Anomaly flags only when activity or tone is materially different from the prior baseline.</li>
-    </ul>
-
-    <!-- ====================================================== -->
-    <!-- AI Governance — MGF for Agentic AI Compliance         -->
-    <!-- ====================================================== -->
-
-    <h2 class="mgf-section-title">AI Governance — MGF for Agentic AI</h2>
-
-    <p class="mgf-intro">This sensing tool is mapped against the Singapore Infocomm Media Development Authority's <a href="https://www.imda.gov.sg/resources/press-releases-factsheets-and-speeches/factsheets/2026/updated-model-ai-governance-framework-for-agentic-ai" target="_blank" rel="noreferrer noopener">Model AI Governance Framework for Agentic AI (updated 20 May 2026)</a>. The framework is voluntary but treated here as the operational baseline.</p>
-
-    <div class="mgf-dim">
-      <h3>Dimension 1 · Assess and bound the risks</h3>
-      <ul>
-        <li class="status">Strong fit</li>
-        <li>External read access is bounded to a hand-maintained source whitelist. Nothing outside the whitelist is fetched.</li>
-        <li>External write access is bounded to a single GitHub repository under the analyst's control. The tool publishes to that repository only — no email, no messaging, no API calls to third-party services, no payments.</li>
-        <li>Content scope is sensing only — no decisions, no transactions, no actions on behalf of any organisation or individual.</li>
-      </ul>
-    </div>
-
-    <div class="mgf-dim">
-      <h3>Dimension 2 · Meaningful human accountability</h3>
-      <ul>
-        <li class="status-gap">Gap</li>
-        <li>Each digest is generated autonomously and pushed to the public site without per-run human review. There is no in-flight checkpoint — the digest goes from generation to publicly readable in one continuous pipeline.</li>
-        <li>The mitigations that exist are after-the-fact only: the <code>runs.log</code> audit trail supports retrospective review; the analyst can retract a digest at any time by renaming the file and pushing the rename, which removes the digest from the public archive on the next push; a periodic spot-check ritual surfaces patterns of error or drift.</li>
-        <li>This Gap rating is the honest accounting of an architectural trade-off. The system was designed to remove per-run friction. If the cost becomes unacceptable, three paths back toward Partial or Strong fit exist: (a) push to a staging branch and require a manual merge to main before publication; (b) add a post-run notification with an explicit publish/reject action; (c) introduce a pre-publish queue that requires analyst approval before the archive lists a new digest.</li>
-      </ul>
-    </div>
-
-    <div class="mgf-dim">
-      <h3>Dimension 3 · Technical controls and processes</h3>
-      <ul>
-        <li class="status">Strong fit</li>
-        <li>Folder isolation. The tool operates inside a single root directory and writes only to subfolders within it.</li>
-        <li>Whitelist enforcement on every external fetch. Attempts to non-whitelisted domains are dropped and logged.</li>
-        <li>Pre-save quality checks on every digest including URL validity, length governance, sentiment-row consistency, footer inputs accuracy, and structural HTML validation.</li>
-        <li>The archive index is backed up before regeneration. The run log is append-only. Failed regenerations restore from backup.</li>
-      </ul>
-    </div>
-
-    <div class="mgf-dim">
-      <h3>Dimension 4 · End-user responsibility</h3>
-      <ul>
-        <li class="status">Strong fit</li>
-        <li>This page is the disclosure surface. The site header on every digest links here, so any reader can see how a digest was produced before reading the content.</li>
-        <li><strong>Public accessibility is disclosed upfront.</strong> The site has no access gate. Anyone with the URL can read every digest. This page (and this paragraph) is the canonical disclosure that the system has no per-run human review before publication.</li>
-        <li>End users are anyone who finds the URL. Every digest tells the reader the same things: it was generated with AI assistance; the data sources read for that run are named in the footer; sentiment markers are a qualitative read, not a measurement; views in the digest are the author's, drawn from publicly observable commentary.</li>
-        <li>Agent boundaries are disclosed explicitly. The tool reads only files inside the inputs folder or domains listed in the source whitelist. It writes only HTML files inside the site folder. It takes no other action.</li>
-        <li>Data-source mode is hybrid. When an analyst drops a supported source file into the inputs folder, the tool reads that file alongside the live scan. When no file is present, the tool runs the live scan alone. The mode that ran is named in the footer of every digest so a reader can judge data fidelity at a glance.</li>
-        <li>Override and retraction. Every digest is a plain HTML file. The analyst can edit, redact, or retract any digest by renaming it; the retraction removes the digest from the public archive on the next push, while the original stays on disk for audit. Corrections and scope changes route to the analyst via the contact path below.</li>
-        <li>Auditability. Each run is recorded in the run log with ISO timestamp, mode, source filename, extracted record count where relevant, tile count, check-pass summary, and git push status. The trail supports spot-check review at any time.</li>
-      </ul>
-    </div>
-
-    <div class="mgf-footer">
-      Reviewed against MGF updated 20 May 2026. Last reviewed: <strong>[REPLACE: review date]</strong>. Reviewer: <strong>[REPLACE: name and role]</strong>. Next review due: <strong>[REPLACE: review date + 6 months]</strong>.
-    </div>
-
-    <h2 class="section-heading">Contact</h2>
-    <p>Corrections, retraction requests, and scope feedback route to <strong>[REPLACE: contact email or handle]</strong>.</p>
-
+  <main class="card" role="main">
+    <span class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="10.5" width="16" height="10" rx="2.5"/>
+        <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>
+      </svg>
+    </span>
+    <h1>This page has closed</h1>
+    <p class="lead">This page is no longer available at this address.</p>
+    <p>The service it hosted has been retired and moved to an upgraded platform. This location is no longer maintained or updated.</p>
+    <div class="divider"></div>
+    <p class="contact">For access or more information, please contact the owner of this site.
+      <!-- Optional: add a contact link, e.g. <a href="mailto:REPLACE_WITH_EMAIL">get in touch</a> -->
+    </p>
+    <p class="foot">Restricted &middot; access by arrangement only</p>
   </main>
-
 </body>
 </html>
